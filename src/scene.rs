@@ -38,6 +38,9 @@ impl Scene {
                 }
             }
 
+            // if all crossings are < 0 and there are an even number of crossings,
+            // continue.
+
             if !drop_keys.contains(i) {
                 continue;
             }

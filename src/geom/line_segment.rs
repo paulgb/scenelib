@@ -1,5 +1,5 @@
 use crate::geom::coord::Coord;
-use crate::geom::traits::{Rotate, Translate, XYFlip};
+use crate::geom::traits::{Translate, XYFlip};
 use crate::geom::vector::Vector;
 
 pub struct LineSegment {
