@@ -20,3 +20,16 @@ pub fn circle(origin: Coord, radius: f64, divisions: usize) -> Polygon {
         .map(|i| origin + v.rotate((i as f64 / divisions as f64) * PI * 2.0))
         .collect())
 }
+
+pub fn ellipse(origin: Coord, size: Vector, divisions: usize) -> Polygon {
+    Polygon::new(
+        (0..divisions)
+        .map(|i| {
+            let radians = (i as f64 / divisions as f64) * PI * 2.0;
+            origin + Vector::new(
+                size.x * radians.cos(),
+                size.y * radians.sin()
+            )
+        })
+        .collect())
+}

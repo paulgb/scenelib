@@ -30,6 +30,14 @@ impl std::ops::Sub for Coord {
     }
 }
 
+impl std::ops::Sub<Vector> for Coord {
+    type Output = Coord;
+
+    fn sub(self, other: Vector) -> Coord {
+        Coord::new(self.x - other.x, self.y - other.y)
+    }
+}
+
 impl std::ops::Add<Vector> for Coord {
     type Output = Coord;
 

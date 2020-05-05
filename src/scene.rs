@@ -3,12 +3,10 @@ use crate::geom::polygon::Polygon;
 use std::collections::{HashMap, HashSet};
 use svg::node::element::Line;
 use svg::Document;
-use rstar::{RTree, AABB, RTreeObject};
+use rstar::{RTree, AABB, RTreeObject, Envelope};
 
 pub struct Scene {
-    // lines: HashMap<usize, LineSegment>,
     lines: RTree<LineSegment>,
-    // next_index: usize,
 }
 
 impl Scene {
@@ -16,6 +14,10 @@ impl Scene {
         Scene {
             lines: RTree::new()
         }
+    }
+
+    pub fn bounds(&self) -> AABB<[f64; 2]> {
+        self.lines.root().envelope()
     }
 
     pub fn add_segment(&mut self, segment: LineSegment) {
@@ -108,10 +110,18 @@ impl Scene {
     }
 
     pub fn to_svg(&self, filename: &str) {
-        let mut doc = Document::new();
+        let bounds = self.bounds();
+        let [x1, y1] = bounds.lower();
+        let [x2, y2] = bounds.upper();
+        let w = x2 - x1;
+        let h = y2 - y1;
+
+        let mut doc = Document::new()
+            .set("viewBox", format!("{} {} {} {}", x1, y1, w, h));
 
         for line in &self.lines {
             let svg_line = Line::new()
+                
                 .set("stroke", "black")
                 .set("x1", line.c1.x)
                 .set("y1", line.c1.y)
