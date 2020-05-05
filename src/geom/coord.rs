@@ -1,10 +1,19 @@
 use crate::geom::vector::Vector;
 use crate::geom::traits::{Rotate, Translate, XYFlip};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]
 pub struct Coord {
     pub x: f64,
     pub y: f64
+}
+
+impl std::cmp::Eq for Coord {
+}
+
+impl std::cmp::Ord for Coord {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        (self.x, self.y).partial_cmp(&(other.x, other.y)).unwrap()
+    }
 }
 
 impl Coord {

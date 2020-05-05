@@ -22,7 +22,7 @@ impl Scene {
         self.next_index += 1;
     }
 
-    pub fn add_poly(&mut self, poly: &Polygon) {
+    pub fn fill_poly(&mut self, poly: &Polygon) {
         let segments = poly.line_segments();
         let mut drop_keys: HashSet<usize> = HashSet::new();
         let mut new_segments: Vec<LineSegment> = Vec::new();
@@ -40,8 +40,7 @@ impl Scene {
 
             // if all crossings are < 0 and there are an even number of crossings,
             // continue.
-
-            if !drop_keys.contains(i) {
+            if crossings.iter().all(|x| *x < 0.0) && (crossings.len() % 2 == 0) {
                 continue;
             }
 
@@ -75,10 +74,17 @@ impl Scene {
         for line in new_segments {
             self.add_segment(line);
         }
+    }
 
-        for line in segments {
+    pub fn stroke_poly(&mut self, poly: &Polygon) {
+        for line in poly.line_segments() {
             self.add_segment(line);
         }
+    }
+
+    pub fn add_poly(&mut self, poly: &Polygon) {
+        self.fill_poly(poly);
+        self.stroke_poly(poly);
     }
 
     pub fn to_svg(&self, filename: &str) {
@@ -97,5 +103,80 @@ impl Scene {
         }
 
         svg::save(filename, &doc).unwrap();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::geom::coord::Coord;
+
+    #[test]
+    fn test_complete_removal() {
+
+    }
+
+    #[test]
+    fn test_no_overlap() {
+        let mut sc = Scene::new();
+
+        let untouched_line = LineSegment::new(
+            Coord::new(0.,9.), 
+            Coord::new(6., 9.)
+        );
+        sc.add_segment(untouched_line);
+
+        let completely_removed_line = LineSegment::new(
+            Coord::new(2.,5.), 
+            Coord::new(4., 5.)
+        );
+        sc.add_segment(completely_removed_line);
+
+        let clipped_line = LineSegment::new(
+            Coord::new(4., 5.),
+            Coord::new(4., 10.)
+        );
+        sc.add_segment(clipped_line);
+        let expected_clipped = LineSegment::new(
+            Coord::new(4., 7.),
+            Coord::new(4., 10.)
+        );
+
+        let split_line = LineSegment::new(
+            Coord::new(0., 3.),
+            Coord::new(10., 3.)
+        );
+        sc.add_segment(split_line);
+        let expected_split1 = LineSegment::new(
+            Coord::new(0., 3.),
+            Coord::new(2., 3.)
+        );
+        let expected_split2 = LineSegment::new(
+            Coord::new(4., 3.),
+            Coord::new(10., 3.)
+        );
+
+        let poly = Polygon::new(vec![
+            Coord::new(3., 1.),
+            Coord::new(6., 7.),
+            Coord::new(0., 7.),
+        ]);
+        sc.fill_poly(&poly);
+        let mut result: Vec<&LineSegment> = sc.lines.values().collect();
+        result.sort();
+
+        let mut expect = vec![
+            &untouched_line,
+            &expected_clipped,
+            &expected_split2,
+            &expected_split1,
+        ];
+        expect.sort();
+
+        assert_eq!(
+            expect,
+            result
+        )
+
     }
 }

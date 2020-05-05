@@ -2,6 +2,7 @@ use crate::geom::coord::Coord;
 use crate::geom::traits::{Translate, XYFlip};
 use crate::geom::vector::Vector;
 
+#[derive(Debug, PartialEq, Clone, Copy, PartialOrd, Eq, Ord)]
 pub struct LineSegment {
     pub c1: Coord,
     pub c2: Coord,
@@ -54,6 +55,7 @@ impl LineSegment {
 
             let frac = (other.c1.x - self.c1.x) / (self.c2.x - self.c1.x);
             let y = self.c1.y + v.y * frac;
+            println!("f1 {}", frac);
 
             if (y - other.c1.y) * (y - other.c2.y) > 0. {
                 None
