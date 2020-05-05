@@ -11,6 +11,10 @@ impl Vector {
         }
     }
 
+    pub fn from_angle(angle: f64) -> Vector {
+        Vector::new(angle.sin(), angle.cos())
+    }
+
     pub fn slope(&self) -> f64 {
         self.y / self.x
     }
