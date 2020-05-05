@@ -28,11 +28,11 @@ impl Scene {
         let mut new_segments: Vec<LineSegment> = Vec::new();
 
         for (i, line) in &self.lines {
-            let mut crossings: Vec<f64> = Vec::new();
+            let mut crossings: Vec<(f64, bool)> = Vec::new();
             for poly_line in &segments {
-                if let Some(frac) = line.intersect_segment(poly_line) {
+                if let Some((frac, direction)) = line.intersect_segment(poly_line) {
                     if frac < 1. {
-                        crossings.push(frac);
+                        crossings.push((frac, direction));
                     }
                     drop_keys.insert(*i);
                 }
@@ -40,16 +40,17 @@ impl Scene {
 
             // if all crossings are < 0 and there are an even number of crossings,
             // continue.
-            if crossings.iter().all(|x| *x < 0.0) && (crossings.len() % 2 == 0) {
+            if crossings.iter().all(|x| x.0 < 0.0) && (crossings.len() % 2 == 0) {
                 continue;
             }
 
             crossings.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
             let mut last = 0.0;
-            let mut draw = true;
             let v = line.vector();
-            for frac in crossings {
+            let mut last_direction: Option<bool> = None;
+            let mut draw = true;
+            for (frac, direction) in crossings {
                 if frac >= last {
                     if draw {
                         new_segments.push(LineSegment::new(line.c1 + v * last, line.c1 + v * frac));
@@ -57,7 +58,16 @@ impl Scene {
 
                     last = frac;
                 }
-                draw = !draw;
+                
+                if let Some(ld) = last_direction {
+                    if ld != direction {
+                        // Only flip draw if the direction has actually flipped.
+                        draw = !draw;
+                    }
+                } else {
+                    draw = !draw;
+                }
+                last_direction = Some(direction)
             }
 
             if draw {
@@ -112,12 +122,69 @@ mod tests {
     use crate::geom::coord::Coord;
 
     #[test]
-    fn test_complete_removal() {
+    fn test_double_intersection() {
+        let mut sc = Scene::new();
 
+        let line = LineSegment::new(
+            Coord::new(0., 0.),
+            Coord::new(10., 0.)
+        );
+        sc.add_segment(line);
+
+        let poly = Polygon::new(vec![
+            Coord::new(10., 5.),
+            Coord::new(5., 0.),
+            Coord::new(10., -5.),
+            Coord::new(15., 0.)
+        ]);
+
+        sc.fill_poly(&poly);
+
+        let result: Vec<&LineSegment> = sc.lines.values().collect();
+
+        assert_eq!(vec![
+            &LineSegment::new(
+                Coord::new(0., 0.),
+                Coord::new(5., 0.)
+            )
+        ], result);
     }
 
     #[test]
-    fn test_no_overlap() {
+    fn test_double_cut() {
+        let mut sc = Scene::new();
+
+        let line = LineSegment::new(
+            Coord::new(0., 0.),
+            Coord::new(10., 0.)
+        );
+        sc.add_segment(line);
+
+        let poly = Polygon::new(vec![
+            Coord::new(8., 0.),
+            Coord::new(7., 1.),
+            Coord::new(8., 2.),
+            Coord::new(9., 1.)
+        ]);
+
+        sc.fill_poly(&poly);
+
+        let result: Vec<&LineSegment> = sc.lines.values().collect();
+
+        assert_eq!(vec![
+            &LineSegment::new(
+                Coord::new(0., 0.),
+                Coord::new(8., 0.)
+            ),
+            &LineSegment::new(
+                Coord::new(8., 0.),
+                Coord::new(10., 0.)
+            )
+        ], result);
+    }
+
+    #[test]
+    fn test_basic_cases() {
         let mut sc = Scene::new();
 
         let untouched_line = LineSegment::new(
@@ -177,6 +244,5 @@ mod tests {
             expect,
             result
         )
-
     }
 }
