@@ -29,20 +29,28 @@ impl Scene {
 
         for (i, line) in &self.lines {
             let mut crossings: Vec<(f64, bool)> = Vec::new();
+            let mut pre = false;
+            let mut post = false;
+            let mut inter = false;
             for poly_line in &segments {
                 if let Some((frac, direction)) = line.intersect_segment(poly_line) {
-                    if frac < 1. {
-                        crossings.push((frac, direction));
+                    if frac < 0. {
+                        pre = true;
+                    } else if frac > 1. {
+                        post = true;
+                    } else {
+                        inter = true;
                     }
-                    drop_keys.insert(*i);
+
+                    crossings.push((frac, direction));
                 }
             }
 
-            // if all crossings are < 0 and there are an even number of crossings,
-            // continue.
-            if crossings.iter().all(|x| x.0 < 0.0) && (crossings.len() % 2 == 0) {
+            if !inter && (!pre || !post) {
                 continue;
             }
+
+            drop_keys.insert(*i);
 
             crossings.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
@@ -51,7 +59,9 @@ impl Scene {
             let mut last_direction: Option<bool> = None;
             let mut draw = true;
             for (frac, direction) in crossings {
-                if frac >= last {
+                if frac > 1.0 {
+                    break
+                } else if frac >= last {
                     if draw {
                         new_segments.push(LineSegment::new(line.c1 + v * last, line.c1 + v * frac));
                     }
