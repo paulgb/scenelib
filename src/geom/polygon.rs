@@ -2,10 +2,22 @@ use crate::geom::coord::Coord;
 use crate::geom::vector::Vector;
 use crate::geom::line_segment::LineSegment;
 use crate::geom::traits::{Rotate, Translate};
+use rstar::{RTreeObject, AABB};
 
 // All polygons are closed.
 pub struct Polygon {
     pub points: Vec<Coord>
+}
+
+impl RTreeObject for Polygon
+{
+    type Envelope = AABB<[f64; 2]>;
+
+    fn envelope(&self) -> Self::Envelope
+    {
+        let points: Vec<[f64; 2]> = self.points.iter().map(|p| [p.x, p.y]).collect();
+        AABB::from_points(&points)
+    }
 }
 
 impl Polygon {

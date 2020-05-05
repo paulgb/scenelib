@@ -13,9 +13,16 @@ fn main() {
     let origin = Coord::new(0., 0.);
     let size = Vector::new(40., 40.);
     let center = origin + size / 2.;
-
-    let s1 = crate::shape::square(origin, size);
     
+    for j in 0..40 {
+        for i in 0..40 {
+            scene.add_poly(&crate::shape::circle(
+                Coord::new(j as f64 * 50., i as f64 * 50.), 40., 40));
+        }
+    }
+
+    /*
+    let s1 = crate::shape::square(origin, size);
     scene.add_poly(&crate::shape::circle(origin + size * 3., 100., 100));
 
     for i in 0..40 {        
@@ -24,6 +31,7 @@ fn main() {
             .translate(size * i as f64 / 10.);
         scene.add_poly(&s2);
     }
+    */
     
     scene.to_svg("result.svg");
 }

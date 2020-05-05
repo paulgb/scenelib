@@ -3,31 +3,31 @@ use crate::geom::polygon::Polygon;
 use std::collections::{HashMap, HashSet};
 use svg::node::element::Line;
 use svg::Document;
+use rstar::{RTree, AABB, RTreeObject};
 
 pub struct Scene {
-    lines: HashMap<usize, LineSegment>,
-    next_index: usize,
+    // lines: HashMap<usize, LineSegment>,
+    lines: RTree<LineSegment>,
+    // next_index: usize,
 }
 
 impl Scene {
     pub fn new() -> Scene {
         Scene {
-            lines: HashMap::new(),
-            next_index: 0,
+            lines: RTree::new()
         }
     }
 
     pub fn add_segment(&mut self, segment: LineSegment) {
-        self.lines.insert(self.next_index, segment);
-        self.next_index += 1;
+        self.lines.insert(segment);
     }
 
     pub fn fill_poly(&mut self, poly: &Polygon) {
         let segments = poly.line_segments();
-        let mut drop_keys: HashSet<usize> = HashSet::new();
+        let mut drop_segments: Vec<LineSegment> = Vec::new();
         let mut new_segments: Vec<LineSegment> = Vec::new();
 
-        for (i, line) in &self.lines {
+        for line in self.lines.locate_in_envelope_intersecting(&poly.envelope()) {
             let mut crossings: Vec<(f64, bool)> = Vec::new();
             let mut pre = false;
             let mut post = false;
@@ -50,7 +50,7 @@ impl Scene {
                 continue;
             }
 
-            drop_keys.insert(*i);
+            drop_segments.push(*line);
 
             crossings.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
@@ -87,8 +87,8 @@ impl Scene {
             }  
         }
 
-        for i in drop_keys {
-            self.lines.remove(&i);
+        for seg in drop_segments {
+            self.lines.remove(&seg);
         }
 
         for line in new_segments {
@@ -110,9 +110,8 @@ impl Scene {
     pub fn to_svg(&self, filename: &str) {
         let mut doc = Document::new();
 
-        for (i, line) in &self.lines {
+        for line in &self.lines {
             let svg_line = Line::new()
-                .set("id", format!("{}", i))
                 .set("stroke", "black")
                 .set("x1", line.c1.x)
                 .set("y1", line.c1.y)
@@ -150,7 +149,7 @@ mod tests {
 
         sc.fill_poly(&poly);
 
-        let result: Vec<&LineSegment> = sc.lines.values().collect();
+        let result: Vec<&LineSegment> = sc.lines.iter().collect();
 
         assert_eq!(vec![
             &LineSegment::new(
@@ -179,7 +178,7 @@ mod tests {
 
         sc.fill_poly(&poly);
 
-        let result: Vec<&LineSegment> = sc.lines.values().collect();
+        let result: Vec<&LineSegment> = sc.lines.iter().collect();
 
         assert_eq!(vec![
             &LineSegment::new(
@@ -239,7 +238,7 @@ mod tests {
             Coord::new(0., 7.),
         ]);
         sc.fill_poly(&poly);
-        let mut result: Vec<&LineSegment> = sc.lines.values().collect();
+        let mut result: Vec<&LineSegment> = sc.lines.iter().collect();
         result.sort();
 
         let mut expect = vec![

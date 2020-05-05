@@ -1,12 +1,24 @@
 use crate::geom::coord::Coord;
 use crate::geom::traits::{Translate, XYFlip};
 use crate::geom::vector::Vector;
+use rstar::{RTreeObject, AABB};
 
 #[derive(Debug, PartialEq, Clone, Copy, PartialOrd, Eq, Ord)]
 pub struct LineSegment {
     pub c1: Coord,
     pub c2: Coord,
 }
+
+impl RTreeObject for LineSegment
+{
+    type Envelope = AABB<[f64; 2]>;
+
+    fn envelope(&self) -> Self::Envelope
+    {
+        AABB::from_corners([self.c1.x, self.c1.y], [self.c2.x, self.c2.y])
+    }
+}
+
 
 impl XYFlip<LineSegment> for LineSegment {
     fn xy_flip(&self) -> LineSegment {
