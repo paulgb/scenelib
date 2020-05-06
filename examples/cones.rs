@@ -3,7 +3,7 @@ use scenelib::prelude::*;
 fn draw_cone(scene: &mut Scene, place: Coord, scale: f64) {
     let mut c = place;
     let mut size = Vector::new(160., 60.) * scale;
-    let dir = Vector::new(0., -6.);
+    let dir = Vector::new(0., -6.) * scale;
 
     for _ in 1..50 {
         scene.add_poly(&ellipse(c, size, 100));
@@ -18,9 +18,9 @@ fn main() {
 
     for j in (1..5).rev() {
         for i in 1..j {
-            let x = (i as f64 - (j as f64) / 2.) * offset;
-            let y = j as f64 * -80.;
-            let scale = 1. + (j as f64 * 0.05);
+            let x = (i as f64 - (j as f64) / 1.8) * offset;
+            let y = j as f64 * -60.;
+            let scale = 1.4 - (j as f64 * 0.17);
             draw_cone(&mut scene, ORIGIN + Vector::new(x, y), scale);
         }
     
