@@ -4,7 +4,7 @@ use crate::geom::coord::Coord;
 
 use std::f64::consts::PI;
 
-pub fn square(origin: Coord, size: Vector) -> Polygon {
+pub fn rect(origin: Coord, size: Vector) -> Polygon {
     Polygon::new(vec![
         origin,
         Coord::new(origin.x, origin.y + size.y),

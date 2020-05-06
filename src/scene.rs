@@ -1,9 +1,8 @@
 use crate::geom::line_segment::LineSegment;
 use crate::geom::polygon::Polygon;
-use std::collections::{HashMap, HashSet};
 use svg::node::element::Line;
 use svg::Document;
-use rstar::{RTree, AABB, RTreeObject, Envelope};
+use rstar::{RTree, AABB, RTreeObject};
 
 pub struct Scene {
     lines: RTree<LineSegment>,
@@ -188,7 +187,8 @@ mod tests {
 
         sc.fill_poly(&poly);
 
-        let result: Vec<&LineSegment> = sc.lines.iter().collect();
+        let mut result: Vec<&LineSegment> = sc.lines.iter().collect();
+        result.sort();
 
         assert_eq!(vec![
             &LineSegment::new(

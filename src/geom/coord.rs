@@ -7,6 +7,8 @@ pub struct Coord {
     pub y: f64
 }
 
+pub const ORIGIN: Coord = Coord {x: 0., y: 0.};
+
 impl std::cmp::Eq for Coord {
 }
 
