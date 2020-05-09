@@ -2,26 +2,26 @@ use scenelib::prelude::*;
 
 fn main() {
     let mut scene = Scene::new();
-    let origin = Coord::new(0., 0.);
+    let origin = Point2f::new(0., 0.);
 
     let mut pos = origin;
 
     for i in 0..100 {
         let y = i as f64 * 3. - 200.;
         scene.add_segment(LineSegment::new(
-            Coord::new(-300., y),
-            Coord::new(300., y + 20.),
+            Point2f::new(-300., y),
+            Point2f::new(300., y + 20.),
         ))
     }
 
-    let mut sp1: Vec<Coord> = Vec::new();
-    let mut sp2: Vec<Coord> = Vec::new();
+    let mut sp1: Vec<Point2f> = Vec::new();
+    let mut sp2: Vec<Point2f> = Vec::new();
 
     for i in 10..400 {
         let angle = (i as f64 * (TWO_PI / 5.)).sqrt();
-        pos = pos + Vector::from_angle(angle) * 10.;
-        let p1 = pos + Vector::from_angle(angle + PI / 4.) * 20.;
-        let p2 = pos + Vector::from_angle(angle - PI / 4.) * 20.;
+        pos = pos + Vec2f::from_angle(angle) * 10.;
+        let p1 = pos + Vec2f::from_angle(angle + PI / 4.) * 20.;
+        let p2 = pos + Vec2f::from_angle(angle - PI / 4.) * 20.;
 
         sp1.push(p1);
         sp2.push(p2);

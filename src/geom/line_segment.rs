@@ -1,12 +1,34 @@
-use crate::geom::coord::Coord;
-use crate::geom::traits::{Translate, XYFlip};
-use crate::geom::vector::Vector;
+use crate::geom::traits::{Translate, XYFlip, Slope};
+use crate::geom::types::{Point2f, Vec2f};
 use rstar::{RTreeObject, AABB};
 
-#[derive(Debug, PartialEq, Clone, Copy, PartialOrd, Eq, Ord)]
+#[derive(PartialEq, Clone, Copy)]
 pub struct LineSegment {
-    pub c1: Coord,
-    pub c2: Coord,
+    pub c1: Point2f,
+    pub c2: Point2f,
+}
+
+impl std::fmt::Debug for LineSegment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Line(({}, {}), ({}, {}))", self.c1.x, self.c1.y, self.c2.x, self.c2.y)
+    }
+}
+
+impl Eq for LineSegment {
+
+}
+
+impl PartialOrd for LineSegment {
+    fn partial_cmp(&self, other: &LineSegment) -> Option<std::cmp::Ordering> {
+        (self.c1.x, self.c1.y, self.c2.x, self.c2.y)
+            .partial_cmp(&(other.c1.x, other.c1.y, other.c2.x, other.c2.y))
+    }
+}
+
+impl Ord for LineSegment {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.partial_cmp(other).unwrap()
+    }
 }
 
 impl RTreeObject for LineSegment
@@ -20,20 +42,20 @@ impl RTreeObject for LineSegment
 }
 
 
-impl XYFlip<LineSegment> for LineSegment {
+impl XYFlip for LineSegment {
     fn xy_flip(&self) -> LineSegment {
         LineSegment::new(self.c1.xy_flip(), self.c2.xy_flip())
     }
 }
 
-impl Translate<LineSegment> for LineSegment {
-    fn translate(&self, dist: Vector) -> LineSegment {
+impl Translate for LineSegment {
+    fn translate(&self, dist: Vec2f) -> LineSegment {
         LineSegment::new(self.c1.translate(dist), self.c2.translate(dist))
     }
 }
 
 impl LineSegment {
-    pub fn new(c1: Coord, c2: Coord) -> LineSegment {
+    pub fn new(c1: Point2f, c2: Point2f) -> LineSegment {
         LineSegment { c1, c2 }
     }
 
@@ -41,7 +63,7 @@ impl LineSegment {
         LineSegment { c1: self.c2, c2: self.c1 }
     }
 
-    pub fn vector(&self) -> Vector {
+    pub fn vector(&self) -> Vec2f {
         self.c2 - self.c1
     }
 
@@ -110,40 +132,40 @@ mod tests {
 
     #[test]
     fn test_intersect_vertical() {
-        let l1 = LineSegment::new(Coord::new(0., 5.), Coord::new(10., 5.));
-        let l2 = LineSegment::new(Coord::new(5., 0.), Coord::new(5., 10.));
+        let l1 = LineSegment::new(Point2f::new(0., 5.), Point2f::new(10., 5.));
+        let l2 = LineSegment::new(Point2f::new(5., 0.), Point2f::new(5., 10.));
 
         assert_eq!(Some((0.5, true)), l1.intersect_segment(&l2));
-        assert_eq!(Some((1.5, true)), l1.intersect_segment(&l2.translate(Vector::new(10., 0.))));
+        assert_eq!(Some((1.5, true)), l1.intersect_segment(&l2.translate(Vec2f::new(10., 0.))));
 
         // The other line segment never intersects the current line.
-        assert_eq!(None, l1.intersect_segment(&l2.translate(Vector::new(0., 10.))));
-        assert_eq!(None, l1.intersect_segment(&l2.translate(Vector::new(10., 10.))));
+        assert_eq!(None, l1.intersect_segment(&l2.translate(Vec2f::new(0., 10.))));
+        assert_eq!(None, l1.intersect_segment(&l2.translate(Vec2f::new(10., 10.))));
     }
 
     #[test]
     fn test_intersect_horizontal() {
-        let l1 = LineSegment::new(Coord::new(0., 0.), Coord::new(10., 10.));
-        let l2 = LineSegment::new(Coord::new(0., 8.), Coord::new(20., 8.));
+        let l1 = LineSegment::new(Point2f::new(0., 0.), Point2f::new(10., 10.));
+        let l2 = LineSegment::new(Point2f::new(0., 8.), Point2f::new(20., 8.));
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
     }
 
     #[test]
     fn test_intersect_regular() {
-        let l1 = LineSegment::new(Coord::new(3., 1.), Coord::new(13., 6.));
-        let l2 = LineSegment::new(Coord::new(10., 6.), Coord::new(14., 2.));
+        let l1 = LineSegment::new(Point2f::new(3., 1.), Point2f::new(13., 6.));
+        let l2 = LineSegment::new(Point2f::new(10., 6.), Point2f::new(14., 2.));
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
-        assert_eq!(Some((0.6, false)), l1.intersect_segment(&l2.translate(Vector::new(-2.0, -1.0))));
-        assert_eq!(Some((1.2, false)), l1.intersect_segment(&l2.translate(Vector::new(4.0, 2.0))));
-        assert_eq!(Some((-0.2, false)), l1.intersect_segment(&l2.translate(Vector::new(-10.0, -5.0))));
+        assert_eq!(Some((0.6, false)), l1.intersect_segment(&l2.translate(Vec2f::new(-2.0, -1.0))));
+        assert_eq!(Some((1.2, false)), l1.intersect_segment(&l2.translate(Vec2f::new(4.0, 2.0))));
+        assert_eq!(Some((-0.2, false)), l1.intersect_segment(&l2.translate(Vec2f::new(-10.0, -5.0))));
 
-        assert_eq!(None, l1.intersect_segment(&l2.translate(Vector::new(-20.0, -5.0))));
+        assert_eq!(None, l1.intersect_segment(&l2.translate(Vec2f::new(-20.0, -5.0))));
     }
 
     #[test]
     fn test_intersect_direction() {
-        let l1 = LineSegment::new(Coord::new(3., 1.), Coord::new(13., 6.));
-        let l2 = LineSegment::new(Coord::new(10., 6.), Coord::new(14., 2.));
+        let l1 = LineSegment::new(Point2f::new(3., 1.), Point2f::new(13., 6.));
+        let l2 = LineSegment::new(Point2f::new(10., 6.), Point2f::new(14., 2.));
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
         assert_eq!(Some((0.8, true)), l1.intersect_segment(&l2.reverse()));
         assert_eq!(Some((0.2, true)), l1.reverse().intersect_segment(&l2));

@@ -137,23 +137,23 @@ impl Scene {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::geom::coord::Coord;
+    use crate::geom::types::Point2f;
 
     #[test]
     fn test_double_intersection() {
         let mut sc = Scene::new();
 
         let line = LineSegment::new(
-            Coord::new(0., 0.),
-            Coord::new(10., 0.)
+            Point2f::new(0., 0.),
+            Point2f::new(10., 0.)
         );
         sc.add_segment(line);
 
         let poly = Polygon::new(vec![
-            Coord::new(10., 5.),
-            Coord::new(5., 0.),
-            Coord::new(10., -5.),
-            Coord::new(15., 0.)
+            Point2f::new(10., 5.),
+            Point2f::new(5., 0.),
+            Point2f::new(10., -5.),
+            Point2f::new(15., 0.)
         ]);
 
         sc.fill_poly(&poly);
@@ -162,8 +162,8 @@ mod tests {
 
         assert_eq!(vec![
             &LineSegment::new(
-                Coord::new(0., 0.),
-                Coord::new(5., 0.)
+                Point2f::new(0., 0.),
+                Point2f::new(5., 0.)
             )
         ], result);
     }
@@ -173,16 +173,16 @@ mod tests {
         let mut sc = Scene::new();
 
         let line = LineSegment::new(
-            Coord::new(0., 0.),
-            Coord::new(10., 0.)
+            Point2f::new(0., 0.),
+            Point2f::new(10., 0.)
         );
         sc.add_segment(line);
 
         let poly = Polygon::new(vec![
-            Coord::new(8., 0.),
-            Coord::new(7., 1.),
-            Coord::new(8., 2.),
-            Coord::new(9., 1.)
+            Point2f::new(8., 0.),
+            Point2f::new(7., 1.),
+            Point2f::new(8., 2.),
+            Point2f::new(9., 1.)
         ]);
 
         sc.fill_poly(&poly);
@@ -192,12 +192,12 @@ mod tests {
 
         assert_eq!(vec![
             &LineSegment::new(
-                Coord::new(0., 0.),
-                Coord::new(8., 0.)
+                Point2f::new(0., 0.),
+                Point2f::new(8., 0.)
             ),
             &LineSegment::new(
-                Coord::new(8., 0.),
-                Coord::new(10., 0.)
+                Point2f::new(8., 0.),
+                Point2f::new(10., 0.)
             )
         ], result);
     }
@@ -207,45 +207,45 @@ mod tests {
         let mut sc = Scene::new();
 
         let untouched_line = LineSegment::new(
-            Coord::new(0.,9.), 
-            Coord::new(6., 9.)
+            Point2f::new(0.,9.), 
+            Point2f::new(6., 9.)
         );
         sc.add_segment(untouched_line);
 
         let completely_removed_line = LineSegment::new(
-            Coord::new(2.,5.), 
-            Coord::new(4., 5.)
+            Point2f::new(2.,5.), 
+            Point2f::new(4., 5.)
         );
         sc.add_segment(completely_removed_line);
 
         let clipped_line = LineSegment::new(
-            Coord::new(4., 5.),
-            Coord::new(4., 10.)
+            Point2f::new(4., 5.),
+            Point2f::new(4., 10.)
         );
         sc.add_segment(clipped_line);
         let expected_clipped = LineSegment::new(
-            Coord::new(4., 7.),
-            Coord::new(4., 10.)
+            Point2f::new(4., 7.),
+            Point2f::new(4., 10.)
         );
 
         let split_line = LineSegment::new(
-            Coord::new(0., 3.),
-            Coord::new(10., 3.)
+            Point2f::new(0., 3.),
+            Point2f::new(10., 3.)
         );
         sc.add_segment(split_line);
         let expected_split1 = LineSegment::new(
-            Coord::new(0., 3.),
-            Coord::new(2., 3.)
+            Point2f::new(0., 3.),
+            Point2f::new(2., 3.)
         );
         let expected_split2 = LineSegment::new(
-            Coord::new(4., 3.),
-            Coord::new(10., 3.)
+            Point2f::new(4., 3.),
+            Point2f::new(10., 3.)
         );
 
         let poly = Polygon::new(vec![
-            Coord::new(3., 1.),
-            Coord::new(6., 7.),
-            Coord::new(0., 7.),
+            Point2f::new(3., 1.),
+            Point2f::new(6., 7.),
+            Point2f::new(0., 7.),
         ]);
         sc.fill_poly(&poly);
         let mut result: Vec<&LineSegment> = sc.lines.iter().collect();
@@ -254,10 +254,11 @@ mod tests {
         let mut expect = vec![
             &untouched_line,
             &expected_clipped,
-            &expected_split2,
             &expected_split1,
+            &expected_split2,
         ];
         expect.sort();
+        result.sort();
 
         assert_eq!(
             expect,

@@ -1,12 +1,12 @@
-use crate::geom::coord::Coord;
-use crate::geom::vector::Vector;
+use crate::geom::types::{Point2f, Vec2f};
+
 use crate::geom::line_segment::LineSegment;
 use crate::geom::traits::{Rotate, Translate};
 use rstar::{RTreeObject, AABB};
 
 // All polygons are closed.
 pub struct Polygon {
-    pub points: Vec<Coord>
+    pub points: Vec<Point2f>
 }
 
 impl RTreeObject for Polygon
@@ -21,7 +21,7 @@ impl RTreeObject for Polygon
 }
 
 impl Polygon {
-    pub fn new(points: Vec<Coord>) -> Polygon {
+    pub fn new(points: Vec<Point2f>) -> Polygon {
         Polygon {
             points
         }
@@ -43,14 +43,14 @@ impl Polygon {
     }
 }
 
-impl Rotate<Polygon> for Polygon {
-    fn rotate(&self, center: Coord, radians: f64) -> Polygon {
-        Polygon::new(self.points.iter().map(|c: &Coord| c.rotate(center, radians)).collect())
+impl Rotate for Polygon {
+    fn rotate(&self, center: Point2f, radians: f64) -> Polygon {
+        Polygon::new(self.points.iter().map(|c: &Point2f| c.rotate(center, radians)).collect())
     }
 }
 
-impl Translate<Polygon> for Polygon {
-    fn translate(&self, dist: Vector) -> Polygon {
-        Polygon::new(self.points.iter().map(|c: &Coord| c.translate(dist)).collect())
+impl Translate for Polygon {
+    fn translate(&self, dist: Vec2f) -> Polygon {
+        Polygon::new(self.points.iter().map(|c: &Point2f| c.translate(dist)).collect())
     }
 }

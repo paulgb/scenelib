@@ -2,8 +2,8 @@ use scenelib::prelude::*;
 
 fn main() {
     let mut scene = Scene::new();
-    let origin = Coord::new(20., 40.);
-    let size = Vector::new(40., 20.);
+    let origin = Point2f::new(20., 40.);
+    let size = Vec2f::new(40., 20.);
     let center = origin + size / 2.;
 
     let s1 = rect(origin, size);
