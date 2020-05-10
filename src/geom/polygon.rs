@@ -5,6 +5,7 @@ use crate::geom::traits::{Rotate, Translate};
 use rstar::{RTreeObject, AABB};
 
 // All polygons are closed.
+#[derive(Debug)]
 pub struct Polygon {
     pub points: Vec<Point2f>
 }
