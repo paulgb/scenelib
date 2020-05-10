@@ -42,7 +42,6 @@ impl Scene {
                     } else {
                         inter = true;
                     }
-
                     crossings.push((frac, direction));
                 }
             }

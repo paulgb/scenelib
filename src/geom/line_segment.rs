@@ -108,7 +108,6 @@ impl LineSegment {
             }
         } else {
             // Otherwise, we find the slope of both and subtract them.
-            
             let other_slope = ov.slope();
             let net_slope = v.slope() - other_slope;
             let y_dist = other.c1.y - self.c1.y + (other_slope * (self.c1.x - other.c1.x));
@@ -116,6 +115,11 @@ impl LineSegment {
 
             let frac = x_delta / v.x;
             let x = x_delta + self.c1.x;
+            
+            if frac.is_nan() {
+                // The lines may intersect but have the same slope.
+                return None
+            }
 
             if (x - other.c1.x) * (x - other.c2.x) > 0. {
                 None
@@ -172,4 +176,11 @@ mod tests {
         assert_eq!(Some((0.2, false)), l1.reverse().intersect_segment(&l2.reverse()));
     }
 
+    #[test]
+    fn test_parallel_lines() {
+        let l1 = LineSegment::new(Point2f::new(84.03137539808972, -50.69242864951529), Point2f::new(54.73012545327112, 11.113630310194111));
+        let l2 = LineSegment::new(Point2f::new(84.03137539808972, -50.69242864951529), Point2f::new(38.15776122775803, 46.07024555196011));
+        assert_eq!(None, l1.intersect_segment(&l2));
+        assert_eq!(None, l1.intersect_segment(&l2.reverse()));
+    }
 }

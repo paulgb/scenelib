@@ -1,9 +1,23 @@
 use crate::geom::types::{Point2f, Point3f};
 use crate::geom::polygon::Polygon;
-use na::{Orthographic3, Perspective3};
+use na::{Orthographic3, Perspective3, Affine3};
 
 pub struct Polygon3 {
     pub points: Vec<Point3f>
+}
+
+impl Polygon3 {
+    pub fn scale(&self, scale: f64) -> Polygon3 {
+        Polygon3 {
+            points: self.points.iter().map(|d: &Point3f| d * scale).collect()
+        }
+    }
+
+    pub fn apply(&self, transformation: &dyn Fn(&Point3f) -> Point3f) -> Polygon3 {
+        Polygon3 {
+            points: self.points.iter().map(|d: &Point3f| transformation(d)).collect()
+        }
+    }
 }
 
 pub trait Projection {
