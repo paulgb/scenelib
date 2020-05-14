@@ -8,6 +8,6 @@ pub use crate::geom::traits::{Rotate, Translate, FromAngle};
 pub use crate::scene::Scene;
 pub use crate::shape::{circle, rect, ellipse};
 pub use crate::projection::polygon3::Polygon3;
-pub use crate::projection::form::cube;
+pub use crate::projection::platonic::{cube, tetrahedron};
 pub use crate::projection::isometric::isometric_projection;
 pub use crate::projection::scene3::Scene3;
