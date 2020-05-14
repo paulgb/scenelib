@@ -23,11 +23,21 @@ impl Scene3 {
     pub fn project(self, projection: &dyn Transform) -> Vec<Polygon> {
         let mut v: Vec<(f64, Polygon)> = self.polys.into_iter().map(|d| {
             let d = d.apply(projection);
+
+            let mut s = 0.;
+            let mut c = 0;
+
+            // TODO: this is a hack.
+            for p in d.points.iter() {
+                s += p.z;
+                c += 1;
+            }
+            /*
             let min_dist = d.points.iter().map(|p| p.z).min_by(&dangerous_compare).unwrap();
             let max_dist = d.points.iter().map(|p| p.z).max_by(&dangerous_compare).unwrap();
+            */
 
-
-            (min_dist + max_dist, d.to_2d())
+            (s / c as f64, d.to_2d())
         }).collect();
 
         v.sort_by(|x, y| dangerous_compare(&x.0, &y.0));
