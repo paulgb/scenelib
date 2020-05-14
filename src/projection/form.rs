@@ -1,5 +1,7 @@
 use crate::geom::types::Point3f;
 use crate::projection::polygon3::Polygon3;
+use crate::projection::transform::Transform;
+
 pub struct Form {
     pub polys: Vec<Polygon3>,
 }
@@ -13,7 +15,7 @@ impl Form {
         Form { polys: self.polys.iter().map(|d: &Polygon3| d.scale(scale)).collect() }
     }
 
-    pub fn apply(&self, transformation: &dyn Fn(&Point3f) -> Point3f) -> Form {
+    pub fn apply(&self, transformation: &dyn Transform) -> Form {
         Form { polys: self.polys.iter().map(|d: &Polygon3| d.apply(transformation)).collect() }
     }
 }
