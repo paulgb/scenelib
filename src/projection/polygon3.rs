@@ -23,7 +23,8 @@ impl Polygon3 {
         // This drops the z component from each point, but also inverts the y axis because SVG screen
         // coordinates increase going down.
         Polygon {
-            points: self.points.iter().map(|d| Point2f::new(d.x, -d.y)).collect()
+            points: self.points.iter().map(|d| Point2f::new(d.x, -d.y)).collect(),
+            holes: vec![]
         }
     }
 }

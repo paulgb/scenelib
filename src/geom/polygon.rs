@@ -7,7 +7,8 @@ use rstar::{RTreeObject, AABB};
 // All polygons are closed.
 #[derive(Debug)]
 pub struct Polygon {
-    pub points: Vec<Point2f>
+    pub points: Vec<Point2f>,
+    pub holes: Vec<Vec<Point2f>>
 }
 
 impl RTreeObject for Polygon
@@ -24,12 +25,13 @@ impl RTreeObject for Polygon
 impl Polygon {
     pub fn new(points: Vec<Point2f>) -> Polygon {
         Polygon {
-            points
+            points,
+            holes: Vec::new()
         }
     }
 
     pub fn line_segments(&self) -> Vec<LineSegment> {
-        let Polygon {points} = self;
+        let Polygon {points, ..} = self;
         let mut result = Vec::new();
         if points.len() < 2 {
             return result
