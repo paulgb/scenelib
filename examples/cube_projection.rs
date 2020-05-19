@@ -1,4 +1,4 @@
-use nalgebra::{Matrix4, Perspective3, Translation3};
+use nalgebra::{Perspective3, Translation3};
 use scenelib::prelude::*;
 
 fn main() {
