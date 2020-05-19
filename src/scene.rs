@@ -24,7 +24,16 @@ impl Scene {
     }
 
     pub fn fill_poly(&mut self, poly: &Polygon) {
-        let segments = poly.line_segments();
+        let segments = {
+            let mut s = poly.points.line_segments();
+
+            for hole in &poly.holes {
+                s.append(&mut hole.line_segments().clone());
+            }
+
+            s
+        };
+
         let mut drop_segments: Vec<LineSegment> = Vec::new();
         let mut new_segments: Vec<LineSegment> = Vec::new();
 
@@ -95,8 +104,13 @@ impl Scene {
     }
 
     pub fn stroke_poly(&mut self, poly: &Polygon) {
-        for line in poly.line_segments() {
+        for line in poly.points.line_segments() {
             self.add_segment(line);
+        }
+        for hole in poly.holes.iter() {
+            for line in hole.line_segments() {
+                self.add_segment(line);
+            }
         }
     }
 
