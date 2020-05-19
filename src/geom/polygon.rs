@@ -30,6 +30,12 @@ impl Polygon {
         }
     }
 
+    pub fn with_holes(points: Vec<Point2f>, holes: Vec<Vec<Point2f>>) -> Polygon {
+        Polygon {
+            points, holes
+        }
+    }
+
     pub fn line_segments(&self) -> Vec<LineSegment> {
         let Polygon {points, ..} = self;
         let mut result = Vec::new();

@@ -1,8 +1,8 @@
 use crate::geom::line_segment::LineSegment;
 use crate::geom::polygon::Polygon;
+use rstar::{RTree, RTreeObject, AABB};
 use svg::node::element::Line;
 use svg::Document;
-use rstar::{RTree, AABB, RTreeObject};
 
 pub struct Scene {
     lines: RTree<LineSegment>,
@@ -11,7 +11,7 @@ pub struct Scene {
 impl Scene {
     pub fn new() -> Scene {
         Scene {
-            lines: RTree::new()
+            lines: RTree::new(),
         }
     }
 
@@ -60,7 +60,7 @@ impl Scene {
             let mut draw = true;
             for (frac, direction) in crossings {
                 if frac > 1.0 {
-                    break
+                    break;
                 } else if frac >= last {
                     if draw {
                         new_segments.push(LineSegment::new(line.c1 + v * last, line.c1 + v * frac));
@@ -68,7 +68,7 @@ impl Scene {
 
                     last = frac;
                 }
-                
+
                 if let Some(ld) = last_direction {
                     if ld != direction {
                         // Only flip draw if the direction has actually flipped.
@@ -81,10 +81,8 @@ impl Scene {
             }
 
             if draw {
-                new_segments.push(
-                    LineSegment::new(line.c1 + v * last, line.c2)
-                );
-            }  
+                new_segments.push(LineSegment::new(line.c1 + v * last, line.c2));
+            }
         }
 
         for seg in drop_segments {
@@ -114,12 +112,10 @@ impl Scene {
         let w = x2 - x1;
         let h = y2 - y1;
 
-        let mut doc = Document::new()
-            .set("viewBox", format!("{} {} {} {}", x1, y1, w, h));
+        let mut doc = Document::new().set("viewBox", format!("{} {} {} {}", x1, y1, w, h));
 
         for line in &self.lines {
             let svg_line = Line::new()
-                
                 .set("stroke", "black")
                 .set("x1", line.c1.x)
                 .set("y1", line.c1.y)
@@ -142,46 +138,41 @@ mod tests {
     fn test_double_intersection() {
         let mut sc = Scene::new();
 
-        let line = LineSegment::new(
-            Point2f::new(0., 0.),
-            Point2f::new(10., 0.)
-        );
+        let line = LineSegment::new(Point2f::new(0., 0.), Point2f::new(10., 0.));
         sc.add_segment(line);
 
         let poly = Polygon::new(vec![
             Point2f::new(10., 5.),
             Point2f::new(5., 0.),
             Point2f::new(10., -5.),
-            Point2f::new(15., 0.)
+            Point2f::new(15., 0.),
         ]);
 
         sc.fill_poly(&poly);
 
         let result: Vec<&LineSegment> = sc.lines.iter().collect();
 
-        assert_eq!(vec![
-            &LineSegment::new(
+        assert_eq!(
+            vec![&LineSegment::new(
                 Point2f::new(0., 0.),
                 Point2f::new(5., 0.)
-            )
-        ], result);
+            )],
+            result
+        );
     }
 
     #[test]
     fn test_double_cut() {
         let mut sc = Scene::new();
 
-        let line = LineSegment::new(
-            Point2f::new(0., 0.),
-            Point2f::new(10., 0.)
-        );
+        let line = LineSegment::new(Point2f::new(0., 0.), Point2f::new(10., 0.));
         sc.add_segment(line);
 
         let poly = Polygon::new(vec![
             Point2f::new(8., 0.),
             Point2f::new(7., 1.),
             Point2f::new(8., 2.),
-            Point2f::new(9., 1.)
+            Point2f::new(9., 1.),
         ]);
 
         sc.fill_poly(&poly);
@@ -189,57 +180,33 @@ mod tests {
         let mut result: Vec<&LineSegment> = sc.lines.iter().collect();
         result.sort();
 
-        assert_eq!(vec![
-            &LineSegment::new(
-                Point2f::new(0., 0.),
-                Point2f::new(8., 0.)
-            ),
-            &LineSegment::new(
-                Point2f::new(8., 0.),
-                Point2f::new(10., 0.)
-            )
-        ], result);
+        assert_eq!(
+            vec![
+                &LineSegment::new(Point2f::new(0., 0.), Point2f::new(8., 0.)),
+                &LineSegment::new(Point2f::new(8., 0.), Point2f::new(10., 0.))
+            ],
+            result
+        );
     }
 
     #[test]
     fn test_basic_cases() {
         let mut sc = Scene::new();
 
-        let untouched_line = LineSegment::new(
-            Point2f::new(0.,9.), 
-            Point2f::new(6., 9.)
-        );
+        let untouched_line = LineSegment::new(Point2f::new(0., 9.), Point2f::new(6., 9.));
         sc.add_segment(untouched_line);
 
-        let completely_removed_line = LineSegment::new(
-            Point2f::new(2.,5.), 
-            Point2f::new(4., 5.)
-        );
+        let completely_removed_line = LineSegment::new(Point2f::new(2., 5.), Point2f::new(4., 5.));
         sc.add_segment(completely_removed_line);
 
-        let clipped_line = LineSegment::new(
-            Point2f::new(4., 5.),
-            Point2f::new(4., 10.)
-        );
+        let clipped_line = LineSegment::new(Point2f::new(4., 5.), Point2f::new(4., 10.));
         sc.add_segment(clipped_line);
-        let expected_clipped = LineSegment::new(
-            Point2f::new(4., 7.),
-            Point2f::new(4., 10.)
-        );
+        let expected_clipped = LineSegment::new(Point2f::new(4., 7.), Point2f::new(4., 10.));
 
-        let split_line = LineSegment::new(
-            Point2f::new(0., 3.),
-            Point2f::new(10., 3.)
-        );
+        let split_line = LineSegment::new(Point2f::new(0., 3.), Point2f::new(10., 3.));
         sc.add_segment(split_line);
-        let expected_split1 = LineSegment::new(
-            Point2f::new(0., 3.),
-            Point2f::new(2., 3.)
-        );
-        let expected_split2 = LineSegment::new(
-            Point2f::new(4., 3.),
-            Point2f::new(10., 3.)
-        );
+        let expected_split1 = LineSegment::new(Point2f::new(0., 3.), Point2f::new(2., 3.));
+        let expected_split2 = LineSegment::new(Point2f::new(4., 3.), Point2f::new(10., 3.));
 
         let poly = Polygon::new(vec![
             Point2f::new(3., 1.),
@@ -259,9 +226,39 @@ mod tests {
         expect.sort();
         result.sort();
 
-        assert_eq!(
-            expect,
-            result
-        )
+        assert_eq!(expect, result)
+    }
+
+    #[test]
+    fn test_polygon_hole() {
+        let mut sc = Scene::new();
+        let line1 = LineSegment::new(Point2f::new(2., 7.), Point2f::new(12., 7.));
+        sc.add_segment(line1);
+
+        let poly = Polygon::with_holes(
+            vec![
+                Point2f::new(0., 0.),
+                Point2f::new(0., 15.),
+                Point2f::new(15., 15.),
+                Point2f::new(15., 0.),
+            ],
+            vec![vec![
+                Point2f::new(5., 5.),
+                Point2f::new(5., 10.),
+                Point2f::new(10., 10.),
+                Point2f::new(10., 5.),
+            ]],
+        );
+        sc.fill_poly(&poly);
+
+        let result: Vec<&LineSegment> = sc.lines.iter().collect();
+
+        let expected = LineSegment::new(
+            Point2f::new(5., 7.),
+            Point2f::new(10., 7.)
+        );
+        assert_eq!(vec![
+            &expected
+        ], result)
     }
 }
