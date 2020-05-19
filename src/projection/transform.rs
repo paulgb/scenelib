@@ -1,4 +1,4 @@
-use nalgebra::{Rotation3, Translation3};
+use nalgebra::{Rotation3, Translation3, Perspective3};
 use crate::geom::types::{Point3f, Vec3f};
 
 pub trait Transform {
@@ -14,6 +14,20 @@ impl Transform for Rotation3<f64> {
 impl Transform for Translation3<f64> {
     fn transform_point(&self, point: Point3f) -> Point3f {
         self * point
+    }
+}
+
+/*
+impl Transform for Matrix4<f64> {
+    fn transform_point(&self, point: Point3f) -> Point3f {
+        Point3f::from_homogeneous(self * point.to_homogeneous()).unwrap()
+    }
+}
+*/
+
+impl Transform for Perspective3<f64> {
+    fn transform_point(&self, point: Point3f) -> Point3f {
+        self.project_point(&point)
     }
 }
 

@@ -22,9 +22,8 @@ impl Polygon3 {
     pub fn to_2d(&self) -> Polygon {
         // This drops the z component from each point, but also inverts the y axis because SVG screen
         // coordinates increase going down.
-        Polygon {
-            points: self.points.iter().map(|d| Point2f::new(d.x, -d.y)).collect()
-        }
+        Polygon::new(
+            self.points.iter().map(|d| Point2f::new(d.x, -d.y)).collect())
     }
 }
 
@@ -34,7 +33,7 @@ impl Polygon3 {
     }
 
     pub fn from_poly(poly: &Polygon) -> Polygon3 {
-        let points: Vec<Point3f> = poly.points.iter().map(
+        let points: Vec<Point3f> = poly.points.0.iter().map(
             |p: &Point2f| Point3f::new(p.x, p.y, 0.0)).collect();
         Polygon3 {
             points
