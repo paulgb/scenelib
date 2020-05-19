@@ -131,6 +131,7 @@ impl Scene {
         for line in &self.lines {
             let svg_line = Line::new()
                 .set("stroke", "black")
+                .set("vector-effect", "non-scaling-stroke")
                 .set("x1", line.c1.x)
                 .set("y1", line.c1.y)
                 .set("x2", line.c2.x)
