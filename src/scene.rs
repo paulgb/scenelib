@@ -243,11 +243,11 @@ mod tests {
                 Point2f::new(15., 0.),
             ],
             vec![vec![
-                Point2f::new(5., 5.),
-                Point2f::new(5., 10.),
-                Point2f::new(10., 10.),
                 Point2f::new(10., 5.),
-            ]],
+                Point2f::new(10., 10.),
+                Point2f::new(5., 10.),
+                Point2f::new(5., 5.),
+                ]],
         );
         sc.fill_poly(&poly);
 
