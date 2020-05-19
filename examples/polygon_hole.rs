@@ -2,12 +2,8 @@ use scenelib::prelude::*;
 
 fn main() {
     let mut scene = Scene::new();
-    let origin = Point2f::new(20., 40.);
-    let size = Vec2f::new(40., 20.);
-    let center = origin + size / 2.;
 
     for i in 0..40 {
-        let s1 = rect(origin, size);
         scene.add_segment(
             LineSegment::new(
                 Point2f::new(-5., -5. + i as f64),
