@@ -32,10 +32,6 @@ impl Scene3 {
                 s += p.z;
                 c += 1;
             }
-            /*
-            let min_dist = d.points.iter().map(|p| p.z).min_by(&dangerous_compare).unwrap();
-            let max_dist = d.points.iter().map(|p| p.z).max_by(&dangerous_compare).unwrap();
-            */
 
             (s / c as f64, d.to_2d())
         }).collect();
