@@ -2,21 +2,24 @@ use crate::geom::types::{Point2f, Point3f};
 use crate::geom::polygon::Polygon;
 use crate::projection::transform::Transform;
 
+#[derive(Clone)]
 pub struct Polygon3 {
     pub points: Vec<Point3f>
 }
 
 impl Polygon3 {
-    pub fn scale(&self, scale: f64) -> Polygon3 {
-        Polygon3 {
-            points: self.points.iter().map(|d: &Point3f| d * scale).collect()
+    pub fn scale(mut self, scale: f64) -> Polygon3 {
+        for d in self.points.iter_mut() {
+            *d = *d * scale
         }
+        self
     }
 
-    pub fn apply(&self, transformation: &dyn Transform) -> Polygon3 {
-        Polygon3 {
-            points: self.points.iter().map(|d: &Point3f| transformation.transform_point(*d)).collect()
+    pub fn apply(mut self, transformation: &dyn Transform) -> Polygon3 {
+        for d in self.points.iter_mut() {
+            *d = transformation.transform_point(*d)
         }
+        self
     }
 
     pub fn to_2d(&self) -> Polygon {

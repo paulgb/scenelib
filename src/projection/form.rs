@@ -10,11 +10,16 @@ impl Form {
         Form { polys }
     }
 
-    pub fn scale(&self, scale: f64) -> Form {
-        Form { polys: self.polys.iter().map(|d: &Polygon3| d.scale(scale)).collect() }
+    pub fn scale(self, scale: f64) -> Form {
+        let polys = self.polys.into_iter().map(|d|
+            d.scale(scale)
+        ).collect();
+        Form {polys}
     }
 
-    pub fn apply(&self, transformation: &dyn Transform) -> Form {
-        Form { polys: self.polys.iter().map(|d: &Polygon3| d.apply(transformation)).collect() }
+    pub fn apply(self, transformation: &dyn Transform) -> Form {
+        let polys = self.polys.into_iter().map(|d|
+            d.apply(transformation)).collect();
+        Form {polys}
     }
 }

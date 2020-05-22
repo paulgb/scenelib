@@ -20,6 +20,6 @@ fn main() {
         }
     }
 
-    let scene = scene3d.to_2d_scene(&isometric_projection());
+    let scene = scene3d.apply(&isometric_projection()).to_2d_scene();
     scene.to_svg("cube_isometric.svg");
 }
