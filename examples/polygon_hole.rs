@@ -28,5 +28,5 @@ fn main() {
     );
     scene.add_poly(&poly);
     
-    scene.to_svg("polygon_hole.svg");
+    write_svg(&scene, "polygon_hole.svg");
 }

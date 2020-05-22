@@ -26,5 +26,5 @@ fn main() {
         }
     }
 
-    scene.to_svg("cones.svg");
+    write_svg(&scene, "cones.svg");
 }

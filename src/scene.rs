@@ -1,11 +1,9 @@
 use crate::geom::line_segment::LineSegment;
 use crate::geom::polygon::Polygon;
 use rstar::{RTree, RTreeObject, AABB};
-use svg::node::element::Line;
-use svg::Document;
 
 pub struct Scene {
-    lines: RTree<LineSegment>,
+    pub lines: RTree<LineSegment>,
 }
 
 impl Scene {
@@ -117,30 +115,6 @@ impl Scene {
     pub fn add_poly(&mut self, poly: &Polygon) {
         self.fill_poly(poly);
         self.stroke_poly(poly);
-    }
-
-    pub fn to_svg(&self, filename: &str) {
-        let bounds = self.bounds();
-        let [x1, y1] = bounds.lower();
-        let [x2, y2] = bounds.upper();
-        let w = x2 - x1;
-        let h = y2 - y1;
-
-        let mut doc = Document::new().set("viewBox", format!("{} {} {} {}", x1, y1, w, h));
-
-        for line in &self.lines {
-            let svg_line = Line::new()
-                .set("stroke", "black")
-                .set("vector-effect", "non-scaling-stroke")
-                .set("x1", line.c1.x)
-                .set("y1", line.c1.y)
-                .set("x2", line.c2.x)
-                .set("y2", line.c2.y);
-
-            doc = doc.add(svg_line);
-        }
-
-        svg::save(filename, &doc).unwrap();
     }
 }
 

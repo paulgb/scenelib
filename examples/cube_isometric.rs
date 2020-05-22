@@ -21,5 +21,5 @@ fn main() {
     }
 
     let scene = scene3d.apply(&isometric_projection()).to_2d_scene();
-    scene.to_svg("cube_isometric.svg");
+    write_svg(&scene, "cube_isometric.svg");
 }

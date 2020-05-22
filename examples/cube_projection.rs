@@ -21,5 +21,5 @@ fn main() {
     let m: Perspective3<f64> = Perspective3::new(1., 3.14 / 8.0, 100.0, 1000.0);
 
     let scene = scene3d.apply(&m).to_2d_scene();
-    scene.to_svg("cube_projection.svg");
+    write_svg(&scene, "cube_projection.svg");
 }

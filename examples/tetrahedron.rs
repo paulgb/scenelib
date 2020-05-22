@@ -24,5 +24,5 @@ fn main() {
     }
 
     let scene = scene3d.apply(&isometric_projection()).to_2d_scene();
-    scene.to_svg("tetrahedron.svg");
+    write_svg(&scene, "tetrahedron.svg");
 }

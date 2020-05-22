@@ -16,5 +16,5 @@ fn main() {
         scene.add_poly(&s2);
     }
     
-    scene.to_svg("basic_shapes.svg");
+    write_svg(&scene, "basic_shapes.svg");
 }

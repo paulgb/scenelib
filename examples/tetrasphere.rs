@@ -1,9 +1,9 @@
+use nalgebra::{Rotation3, Translation3};
 use scenelib::prelude::*;
-use nalgebra::{Translation3, Rotation3};
 
 fn main() {
     let mut scene3d: Scene3 = Scene3::new();
-    
+
     const LAT_MIN: f64 = PI / 4.;
     const LAT_MAX: f64 = 3. * PI / 4.;
     const LAT_STEPS: u32 = 10;
@@ -17,24 +17,17 @@ fn main() {
             let lon = (i as f64 / LON_STEPS as f64) * PI * 2.;
 
             let mut tet = tetrahedron()
-            // Scale.
-            .apply(&SCALE)
-            // Translate.
-            .apply(&Translation3::from(Vec3f::new(RADIUS, 0., 0.)))
-            // Rotate.
-            .apply(&Rotation3::from_euler_angles(
-                0.,
-                lon,
-                lat
-            ))
-            // Translate.
-            ;
+                // Scale.
+                .apply(&SCALE)
+                // Translate.
+                .apply(&Translation3::from(Vec3f::new(RADIUS, 0., 0.)))
+                // Rotate.
+                .apply(&Rotation3::from_euler_angles(0., lon, lat));
 
-        scene3d.append(&mut tet.polys);
-
+            scene3d.append(&mut tet.polys);
         }
     }
 
     let scene = scene3d.apply(&isometric_projection()).to_2d_scene();
-    scene.to_svg("tetrasphere.svg");
+    write_svg(&scene, "tetrasphere.svg");
 }
