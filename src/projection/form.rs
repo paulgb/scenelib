@@ -1,5 +1,6 @@
 use crate::projection::polygon3::Polygon3;
 use crate::projection::transform::Transform;
+use crate::projection::apply::Apply;
 
 pub struct Form {
     pub polys: Vec<Polygon3>,
@@ -9,15 +10,10 @@ impl Form {
     pub fn new(polys: Vec<Polygon3>) -> Form {
         Form { polys }
     }
+}
 
-    pub fn scale(self, scale: f64) -> Form {
-        let polys = self.polys.into_iter().map(|d|
-            d.scale(scale)
-        ).collect();
-        Form {polys}
-    }
-
-    pub fn apply(self, transformation: &dyn Transform) -> Form {
+impl Apply for Form {
+    fn apply(self, transformation: &dyn Transform) -> Form {
         let polys = self.polys.into_iter().map(|d|
             d.apply(transformation)).collect();
         Form {polys}

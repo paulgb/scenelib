@@ -2,6 +2,7 @@ use crate::geom::polygon::Polygon;
 use crate::projection::polygon3::Polygon3;
 use crate::projection::transform::Transform;
 use crate::scene::Scene;
+use crate::projection::apply::Apply;
 
 pub struct Scene3 {
     pub polys: Vec<Polygon3>,
@@ -18,11 +19,6 @@ impl Scene3 {
 
     pub fn append(&mut self, polys: &mut Vec<Polygon3>) {
         self.polys.append(polys)
-    }
-
-    pub fn apply(self, transform: &dyn Transform) -> Scene3 {
-        let polys = self.polys.into_iter().map(|d| d.apply(transform)).collect();
-        Scene3 { polys }
     }
 
     pub fn project(self) -> Vec<Polygon> {
@@ -55,5 +51,12 @@ impl Scene3 {
         }
 
         s
+    }
+}
+
+impl Apply for Scene3 {
+    fn apply(self, transform: &dyn Transform) -> Scene3 {
+        let polys = self.polys.into_iter().map(|d| d.apply(transform)).collect();
+        Scene3 { polys }
     }
 }

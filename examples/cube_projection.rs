@@ -1,4 +1,4 @@
-use nalgebra::{Perspective3, Translation3};
+use nalgebra::Perspective3;
 use scenelib::prelude::*;
 
 fn main() {
@@ -6,19 +6,11 @@ fn main() {
 
     for i in 1..4 {
         for j in 1..4 {
-            let mut cube = cube().apply(&50.)
-            .apply(&Translation3::from(
-                Vec3f::new(
-                    i as f64 * 70.,
-                    j as f64 * 70.,
-                    0.,
-                )
-            ))
-            .apply(&isometric_projection())
-            .apply(&Translation3::from(Vec3f::new(
-               0., 0.,
-                1000.,
-            )));
+            let mut cube = cube().scale(50.).translate(
+                i as f64 * 70.,
+                j as f64 * 70.,
+                0.,
+            );
             scene3d.append(&mut cube.polys);
         }
     }
@@ -26,7 +18,8 @@ fn main() {
     let m: Perspective3<f64> = Perspective3::new(1., 3.14 / 8.0, 100.0, 1000.0);
 
     let scene = scene3d
-        //.apply(&isometric_projection())
+        .apply(&isometric_projection())
+        .translate(0., 0., 1000.)
         .apply(&m)
         .to_2d_scene();
     write_svg(&scene, "cube_projection.svg");
