@@ -1,6 +1,11 @@
-use crate::geom::traits::{Translate, XYFlip, Slope};
+use crate::geom::traits::{Slope, Translate, XYFlip};
 use crate::geom::types::{Point2f, Vec2f};
 use rstar::{RTreeObject, AABB};
+
+// A very small number to be used in calculations to avoid some
+// issues that come up with numerical stability. Set experimentally
+// to the lowest order of magnitude where the issues disappear.
+const EPSILON: f64 = 1e-32;
 
 #[derive(PartialEq, Clone, Copy)]
 pub struct LineSegment {
@@ -10,13 +15,15 @@ pub struct LineSegment {
 
 impl std::fmt::Debug for LineSegment {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Line(({}, {}), ({}, {}))", self.c1.x, self.c1.y, self.c2.x, self.c2.y)
+        write!(
+            f,
+            "Line(({}, {}), ({}, {}))",
+            self.c1.x, self.c1.y, self.c2.x, self.c2.y
+        )
     }
 }
 
-impl Eq for LineSegment {
-
-}
+impl Eq for LineSegment {}
 
 impl PartialOrd for LineSegment {
     fn partial_cmp(&self, other: &LineSegment) -> Option<std::cmp::Ordering> {
@@ -31,16 +38,13 @@ impl Ord for LineSegment {
     }
 }
 
-impl RTreeObject for LineSegment
-{
+impl RTreeObject for LineSegment {
     type Envelope = AABB<[f64; 2]>;
 
-    fn envelope(&self) -> Self::Envelope
-    {
+    fn envelope(&self) -> Self::Envelope {
         AABB::from_corners([self.c1.x, self.c1.y], [self.c2.x, self.c2.y])
     }
 }
-
 
 impl XYFlip for LineSegment {
     fn xy_flip(&self) -> LineSegment {
@@ -60,7 +64,10 @@ impl LineSegment {
     }
 
     pub fn reverse(&self) -> LineSegment {
-        LineSegment { c1: self.c2, c2: self.c1 }
+        LineSegment {
+            c1: self.c2,
+            c2: self.c1,
+        }
     }
 
     pub fn vector(&self) -> Vec2f {
@@ -75,12 +82,14 @@ impl LineSegment {
         let v = self.vector();
 
         // If this line has infinite slope, flip it.
-        if v.x == 0. {
-            if v.y != 0. {
-                return self.xy_flip().intersect_segment(&other.xy_flip());
-            } else {
+        if v.y == 0. {
+            if v.x == 0. {
                 // This line segment is actually a point.
                 return None;
+            }
+        } else {
+            if (v.x / v.y).abs() < EPSILON {
+                return self.xy_flip().intersect_segment(&other.xy_flip());
             }
         }
 
@@ -89,7 +98,7 @@ impl LineSegment {
         let perp_dot = (v.x * ov.y) - (v.y * ov.x);
 
         if perp_dot == 0. {
-            return None
+            return None;
         }
 
         let direction = perp_dot > 0.;
@@ -115,13 +124,13 @@ impl LineSegment {
 
             let frac = x_delta / v.x;
             let x = x_delta + self.c1.x;
-            
+
             if frac.is_nan() {
                 // The lines may intersect but have the same slope.
-                return None
+                return None;
             }
 
-            if (x - other.c1.x) * (x - other.c2.x) > 0. {
+            if (x - other.c1.x) * (x - other.c2.x) > EPSILON {
                 None
             } else {
                 Some((frac, direction))
@@ -140,11 +149,20 @@ mod tests {
         let l2 = LineSegment::new(Point2f::new(5., 0.), Point2f::new(5., 10.));
 
         assert_eq!(Some((0.5, true)), l1.intersect_segment(&l2));
-        assert_eq!(Some((1.5, true)), l1.intersect_segment(&l2.translate(Vec2f::new(10., 0.))));
+        assert_eq!(
+            Some((1.5, true)),
+            l1.intersect_segment(&l2.translate(Vec2f::new(10., 0.)))
+        );
 
         // The other line segment never intersects the current line.
-        assert_eq!(None, l1.intersect_segment(&l2.translate(Vec2f::new(0., 10.))));
-        assert_eq!(None, l1.intersect_segment(&l2.translate(Vec2f::new(10., 10.))));
+        assert_eq!(
+            None,
+            l1.intersect_segment(&l2.translate(Vec2f::new(0., 10.)))
+        );
+        assert_eq!(
+            None,
+            l1.intersect_segment(&l2.translate(Vec2f::new(10., 10.)))
+        );
     }
 
     #[test]
@@ -159,11 +177,23 @@ mod tests {
         let l1 = LineSegment::new(Point2f::new(3., 1.), Point2f::new(13., 6.));
         let l2 = LineSegment::new(Point2f::new(10., 6.), Point2f::new(14., 2.));
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
-        assert_eq!(Some((0.6, false)), l1.intersect_segment(&l2.translate(Vec2f::new(-2.0, -1.0))));
-        assert_eq!(Some((1.2, false)), l1.intersect_segment(&l2.translate(Vec2f::new(4.0, 2.0))));
-        assert_eq!(Some((-0.2, false)), l1.intersect_segment(&l2.translate(Vec2f::new(-10.0, -5.0))));
+        assert_eq!(
+            Some((0.6, false)),
+            l1.intersect_segment(&l2.translate(Vec2f::new(-2.0, -1.0)))
+        );
+        assert_eq!(
+            Some((1.2, false)),
+            l1.intersect_segment(&l2.translate(Vec2f::new(4.0, 2.0)))
+        );
+        assert_eq!(
+            Some((-0.2, false)),
+            l1.intersect_segment(&l2.translate(Vec2f::new(-10.0, -5.0)))
+        );
 
-        assert_eq!(None, l1.intersect_segment(&l2.translate(Vec2f::new(-20.0, -5.0))));
+        assert_eq!(
+            None,
+            l1.intersect_segment(&l2.translate(Vec2f::new(-20.0, -5.0)))
+        );
     }
 
     #[test]
@@ -173,14 +203,47 @@ mod tests {
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
         assert_eq!(Some((0.8, true)), l1.intersect_segment(&l2.reverse()));
         assert_eq!(Some((0.2, true)), l1.reverse().intersect_segment(&l2));
-        assert_eq!(Some((0.2, false)), l1.reverse().intersect_segment(&l2.reverse()));
+        assert_eq!(
+            Some((0.2, false)),
+            l1.reverse().intersect_segment(&l2.reverse())
+        );
     }
 
     #[test]
     fn test_parallel_lines() {
-        let l1 = LineSegment::new(Point2f::new(84.03137539808972, -50.69242864951529), Point2f::new(54.73012545327112, 11.113630310194111));
-        let l2 = LineSegment::new(Point2f::new(84.03137539808972, -50.69242864951529), Point2f::new(38.15776122775803, 46.07024555196011));
+        let l1 = LineSegment::new(
+            Point2f::new(84.03137539808972, -50.69242864951529),
+            Point2f::new(54.73012545327112, 11.113630310194111),
+        );
+        let l2 = LineSegment::new(
+            Point2f::new(84.03137539808972, -50.69242864951529),
+            Point2f::new(38.15776122775803, 46.07024555196011),
+        );
         assert_eq!(None, l1.intersect_segment(&l2));
         assert_eq!(None, l1.intersect_segment(&l2.reverse()));
+    }
+
+    #[test]
+    fn test_near_infinite_slope() {
+        let l1 = LineSegment::new(
+            Point2f::new(-0.000000000000000040274189285034336, 10.),
+            Point2f::new(-0.00000000000000003900535185736784, 0.),
+        );
+
+        let l2 = LineSegment::new(
+            Point2f::new(-10., 6.),
+            Point2f::new(10., 6.),
+        );
+
+
+        assert_eq!(
+            Some((0.4, true)),
+            l1.intersect_segment(&l2)
+        );
+
+        assert_eq!(
+            Some((0.5, false)),
+            l2.intersect_segment(&l1)
+        );
     }
 }

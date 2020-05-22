@@ -20,10 +20,6 @@ fn main() {
         .translate(0., 0., 1000.)
         .apply(&m);
 
-    for poly in scene3d.project() {
-        println!("{:?}", poly)
-    }
-
     let scene = scene3d.to_2d_scene();
     write_svg(&scene, "repro_missing_line.svg");
 }

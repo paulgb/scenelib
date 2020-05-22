@@ -4,9 +4,8 @@ fn main() {
     let mut scene = Scene::new();
 
     scene.add_segment(LineSegment::new(
-        Point2f::new(-0.01934741332132946, 0.4803200744352772),
+        Point2f::new(0.01934741332132946, 0.4503200744352772),
         Point2f::new(-0.21972214752293184, 0.611218361274748),
-        
     ));
 
     let polys = vec![

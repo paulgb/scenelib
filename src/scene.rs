@@ -54,6 +54,9 @@ impl Scene {
             }
 
             if !inter && (!pre || !post) {
+                // If the line does not have any intersections, we do not need to remove it.
+                // This is not necessary for correctness (since the segment would be removed
+                // and added back), but it's a big performance improvement.
                 continue;
             }
 
