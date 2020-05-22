@@ -21,7 +21,7 @@ impl Scene3 {
         self.polys.append(polys)
     }
 
-    pub fn project(self) -> Vec<Polygon> {
+    pub fn project(&self) -> Vec<Polygon> {
         let mut v: Vec<(f64, Polygon)> = self
             .polys
             .iter()
@@ -44,7 +44,7 @@ impl Scene3 {
         v.into_iter().map(|d| d.1).collect()
     }
 
-    pub fn to_2d_scene(self) -> Scene {
+    pub fn to_2d_scene(&self) -> Scene {
         let mut s = Scene::new();
         for poly in self.project() {
             s.add_poly(&poly)

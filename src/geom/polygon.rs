@@ -23,13 +23,28 @@ impl PointLoop {
         result
     }
 }
-
-// All polygons are closed.
-#[derive(Debug)]
 pub struct Polygon {
     pub points: PointLoop,
     pub holes: Vec<PointLoop>
 }
+
+impl std::fmt::Debug for Polygon {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut comma = false;
+        write!(f, "Polygon::from_coords(vec![")?;
+
+        for point in &self.points.0 {
+            if comma {
+                write!(f, ",")?;
+            }
+            write!(f, "({}, {})", point.x, point.y)?;
+            comma = true;
+        }
+        
+        write!(f, "])")
+    }
+}
+
 
 impl RTreeObject for Polygon
 {
@@ -46,6 +61,13 @@ impl Polygon {
     pub fn new(points: Vec<Point2f>) -> Polygon {
         Polygon {
             points: PointLoop(points),
+            holes: Vec::new()
+        }
+    }
+
+    pub fn from_coords(coords: Vec<(f64, f64)>) -> Polygon {
+        Polygon {
+            points: PointLoop(coords.iter().map(|d| Point2f::new(d.0, d.1)).collect()),
             holes: Vec::new()
         }
     }
