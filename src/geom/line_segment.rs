@@ -5,7 +5,7 @@ use rstar::{RTreeObject, AABB};
 // A very small number to be used in calculations to avoid some
 // issues that come up with numerical stability. Set experimentally
 // to the lowest order of magnitude where the issues disappear.
-const EPSILON: f64 = 1e-32;
+const EPSILON: f64 = 1e-14;
 
 #[derive(PartialEq, Clone, Copy)]
 pub struct LineSegment {
@@ -81,7 +81,15 @@ impl LineSegment {
 
         let v = self.vector();
 
-        // If this line has infinite slope, flip it.
+        // The algorithm assumes that the current line has finite slope (i.e. that
+        // it is neither vertical nor a point), so we handle a few special cases:
+        // - If it's a point, we treat it as if it doesn't intersect anything, so
+        //   we return None.
+        // - If it's a vertical line, we flip the coordinate space by swapping x and
+        //   y and call ourselves recursively. If an intersection is found, we have
+        //   to be careful to flip the direction as well.
+        // For numerical stability, we actually do the flip if the line is not quite
+        // vertical but close enough that floating point errors may cause issues.
         if v.y == 0. {
             if v.x == 0. {
                 // This line segment is actually a point.
@@ -89,22 +97,46 @@ impl LineSegment {
             }
         } else {
             if (v.x / v.y).abs() < EPSILON {
-                return self.xy_flip().intersect_segment(&other.xy_flip());
+                if let Some((frac, direction)) = self.xy_flip().intersect_segment(&other.xy_flip())
+                {
+                    // Direction flips across x/y.
+                    return Some((frac, !direction));
+                } else {
+                    return None;
+                }
             }
         }
 
         let ov = other.vector();
 
-        let perp_dot = (v.x * ov.y) - (v.y * ov.x);
+        // If we extend both lines to infinity, there are three possible cases:
+        // 1. The lines are parallel and never intersect.
+        // 2. The second line crosses the first from the left.
+        // 3. The second line crosses the first from the right.
+        //
+        // Note that these are a function of the directions (vectors) of each line
+        // and the actual positions of the lines in space has no bearing on the
+        // outcome.
+        //
+        // This code determines which case we have, by computing the dot-product
+        // between the first line's vector and the vector obtained by rotating the
+        // second vector a quarter rotation counter-clockwise. If this is positive,
+        // the second line crosses the first line from the right (from the first
+        // line's vantage point); if it is negative, from the left; and if it is
+        // zero, the lines are parallel.
+        let direction = {
+            let perp_dot = (v.x * ov.y) - (v.y * ov.x);
 
-        if perp_dot == 0. {
-            return None;
-        }
+            if perp_dot == 0. {
+                // The lines are parallel.
+                return None;
+            } else {
+                perp_dot > 0.
+            }
+        };
 
-        let direction = perp_dot > 0.;
-
-        if ov.x == 0. {
-            // If the other line has infinite slope, special case.
+        if ov.y != 0. && ((ov.x / ov.y).abs() < EPSILON) {
+            // If the other line has (near) infinite slope, special case.
             // We know the lines cross at x = other.c1.x, so we just have to
             // find that value along x.
             let frac = (other.c1.x - self.c1.x) / (self.c2.x - self.c1.x);
@@ -230,20 +262,10 @@ mod tests {
             Point2f::new(-0.00000000000000003900535185736784, 0.),
         );
 
-        let l2 = LineSegment::new(
-            Point2f::new(-10., 6.),
-            Point2f::new(10., 6.),
-        );
+        let l2 = LineSegment::new(Point2f::new(-10., 6.), Point2f::new(10., 6.));
 
+        assert_eq!(Some((0.4, true)), l1.intersect_segment(&l2));
 
-        assert_eq!(
-            Some((0.4, true)),
-            l1.intersect_segment(&l2)
-        );
-
-        assert_eq!(
-            Some((0.5, false)),
-            l2.intersect_segment(&l1)
-        );
+        assert_eq!(Some((0.5, false)), l2.intersect_segment(&l1));
     }
 }
