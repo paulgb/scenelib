@@ -89,13 +89,13 @@ fn main() {
 
     let mut scene = scene3d
         .apply(&isometric_projection())
-        .translate(0., -1000., 3500.)
+        .translate(0., -2000., 3500.)
         .apply(&m)
         .to_2d_scene();
     
     scene.fill_poly(&rect(
-        Point2f::new(-1.8419205274868402, -2.1551914307735975),
-        Vec2f::new(3.739078913297737, 1.)
+        Point2f::new(-1.8419205274868402, -3.551914307735975),
+        Vec2f::new(6.739078913297737, 2.4)
     ));
 
     let mut plot = scene
