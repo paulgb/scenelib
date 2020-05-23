@@ -13,3 +13,5 @@ pub use crate::projection::isometric::isometric_projection;
 pub use crate::projection::scene3::Scene3;
 pub use crate::export::WriteSVG;
 pub use crate::projection::apply::{Apply, ApplyOps};
+pub use crate::plot::Plot;
+pub use crate::optimizer::greedy_optimize;

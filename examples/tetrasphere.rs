@@ -29,5 +29,9 @@ fn main() {
     }
 
     let scene = scene3d.apply(&isometric_projection()).to_2d_scene();
-    scene.to_plot().write_svg("tetrasphere.svg");
+    let mut plot = scene.to_plot();
+    println!("Before: {:?}", plot.cost());
+    plot = greedy_optimize(plot);
+    println!("After: {:?}", plot.cost());
+    plot.write_svg("tetrasphere.svg");
 }

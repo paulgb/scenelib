@@ -18,12 +18,9 @@ impl Scene {
         let bounds = self.lines.root().envelope();
         let lower_bound: Point2f = Point2f::from(bounds.lower());
         let upper_bound: Point2f = Point2f::from(bounds.upper());
+        let lines = self.lines.iter().map(|d| *d).collect();
 
-        Plot {
-            lines: self.lines.iter().map(|d| *d).collect(),
-            lower_bound,
-            upper_bound
-        }
+        Plot::new(lines, lower_bound, upper_bound)
     }
 
     pub fn bounds(&self) -> AABB<[f64; 2]> {
