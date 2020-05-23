@@ -21,15 +21,5 @@ fn main() {
         scene.add_poly(&poly);
     }
 
-    write_svg(
-        &scene,
-        &format!(
-            "{}.svg",
-            std::path::Path::new(std::file!())
-                .file_stem()
-                .unwrap()
-                .to_str()
-                .unwrap()
-        ),
-    );
+    scene.to_plot().write_svg("repro_new_missing_line_from_polys.svg");
 }

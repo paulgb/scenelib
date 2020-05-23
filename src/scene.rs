@@ -1,15 +1,28 @@
 use crate::geom::line_segment::LineSegment;
 use crate::geom::polygon::Polygon;
 use rstar::{RTree, RTreeObject, AABB};
-
+use crate::plot::Plot;
+use crate::geom::types::Point2f;
 pub struct Scene {
-    pub lines: RTree<LineSegment>,
+    lines: RTree<LineSegment>,
 }
 
 impl Scene {
     pub fn new() -> Scene {
         Scene {
             lines: RTree::new(),
+        }
+    }
+
+    pub fn to_plot(&self) -> Plot {
+        let bounds = self.lines.root().envelope();
+        let lower_bound: Point2f = Point2f::from(bounds.lower());
+        let upper_bound: Point2f = Point2f::from(bounds.upper());
+
+        Plot {
+            lines: self.lines.iter().map(|d| *d).collect(),
+            lower_bound,
+            upper_bound
         }
     }
 

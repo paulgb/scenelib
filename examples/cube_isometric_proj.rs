@@ -24,5 +24,6 @@ fn main() {
         .translate(0., 0., 1000.)
         .apply(&m)
         .to_2d_scene();
-    write_svg(&scene, "cube_isometric_proj.svg");
+
+    scene.to_plot().write_svg("cube_isometric_proj.svg");
 }

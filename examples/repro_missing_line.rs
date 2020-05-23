@@ -21,5 +21,6 @@ fn main() {
         .apply(&m);
 
     let scene = scene3d.to_2d_scene();
-    write_svg(&scene, "repro_missing_line.svg");
+
+    scene.to_plot().write_svg("repro_missing_line.svg");
 }

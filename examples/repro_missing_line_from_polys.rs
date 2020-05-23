@@ -21,5 +21,5 @@ fn main() {
         scene.add_poly(&poly);
     }
 
-    write_svg(&scene, "repro_missing_line_from_polys.svg");
+    scene.to_plot().write_svg("repro_missing_line_from_polys.svg");
 }

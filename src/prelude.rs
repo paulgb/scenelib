@@ -11,5 +11,5 @@ pub use crate::projection::polygon3::Polygon3;
 pub use crate::projection::platonic::{cube, tetrahedron};
 pub use crate::projection::isometric::isometric_projection;
 pub use crate::projection::scene3::Scene3;
-pub use crate::export::write_svg;
+pub use crate::export::WriteSVG;
 pub use crate::projection::apply::{Apply, ApplyOps};

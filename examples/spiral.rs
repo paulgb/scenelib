@@ -31,5 +31,5 @@ fn main() {
     sp1.append(&mut sp2);
     scene.add_poly(&Polygon::new(sp1));
 
-    write_svg(&scene, "spiral.svg");
+    scene.to_plot().write_svg("spiral.svg");
 }
