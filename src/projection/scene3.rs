@@ -17,6 +17,10 @@ impl Scene3 {
         Scene3 { polys: Vec::new() }
     }
 
+    pub fn push(&mut self, poly: Polygon3) {
+        self.polys.push(poly)
+    }
+
     pub fn append(&mut self, polys: &mut Vec<Polygon3>) {
         self.polys.append(polys)
     }

@@ -1,6 +1,7 @@
 use crate::geom::types::{Point2f, Point3f};
 use crate::geom::polygon::Polygon;
 use crate::projection::transform::Transform;
+use crate::projection::apply::Apply;
 
 #[derive(Clone)]
 pub struct Polygon3 {
@@ -11,13 +12,6 @@ impl Polygon3 {
     pub fn scale(mut self, scale: f64) -> Polygon3 {
         for d in self.points.iter_mut() {
             *d = *d * scale
-        }
-        self
-    }
-
-    pub fn apply(mut self, transformation: &dyn Transform) -> Polygon3 {
-        for d in self.points.iter_mut() {
-            *d = transformation.transform_point(*d)
         }
         self
     }
@@ -41,5 +35,14 @@ impl Polygon3 {
         Polygon3 {
             points
         }
+    }
+}
+
+impl Apply for Polygon3 {
+    fn apply(mut self, transformation: &dyn Transform) -> Polygon3 {
+        for d in self.points.iter_mut() {
+            *d = transformation.transform_point(*d)
+        }
+        self
     }
 }

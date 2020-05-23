@@ -18,10 +18,11 @@ impl WriteSVG for Plot {
         let diff = upper_bound - lower_bound;
         let w = diff.x;
         let h = diff.y;
+        let margin = (w * 0.05).max(h * 0.05);
 
         let mut doc = Document::new().set(
             "viewBox",
-            format!("{} {} {} {}", lower_bound.x, lower_bound.y, w, h),
+            format!("{} {} {} {}", lower_bound.x - margin, lower_bound.y - margin, w + margin * 2., h + margin * 2.),
         );
         let mut path_data = Data::new();
         let mut last: Point2f = Point2f::new(0., 0.);
@@ -38,6 +39,7 @@ impl WriteSVG for Plot {
 
         let svg_line = Path::new()
             .set("stroke", "black")
+            .set("fill", "none")
             .set("vector-effect", "non-scaling-stroke")
             .set("d", path_data);
         doc = doc.add(svg_line);
