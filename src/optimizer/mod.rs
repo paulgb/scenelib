@@ -22,7 +22,10 @@ impl RTreeObject for TreeElement {
     type Envelope = AABB<[f64; 2]>;
 
     fn envelope(&self) -> Self::Envelope {
-        AABB::from_corners([self.start.inner.x, self.start.inner.y], [self.start.inner.x, self.start.inner.y])
+        AABB::from_corners(
+            [self.start.inner.x, self.start.inner.y],
+            [self.start.inner.x, self.start.inner.y],
+        )
     }
 }
 
@@ -55,7 +58,10 @@ pub fn greedy_optimize(plot: Plot) -> Plot {
     let mut cursor = plot.origin;
 
     while tree.size() > 0 {
-        let next = (*tree.nearest_neighbor(&[cursor.inner.x, cursor.inner.y]).unwrap()).clone();
+        let next = (*tree
+            .nearest_neighbor(&[cursor.inner.x, cursor.inner.y])
+            .unwrap())
+        .clone();
 
         lines.push(LineSegment::new(next.start, next.end));
         cursor = next.end;

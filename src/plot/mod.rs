@@ -23,7 +23,9 @@ impl Plot {
             lines,
             lower_bound,
             upper_bound,
-            origin: Point {inner: [0., 0.].into()}
+            origin: Point {
+                inner: [0., 0.].into(),
+            },
         }
     }
 
@@ -51,7 +53,7 @@ impl Plot {
             move_cost,
             line_cost,
             segments,
-            moves
+            moves,
         }
     }
 }

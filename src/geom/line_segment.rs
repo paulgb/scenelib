@@ -167,8 +167,8 @@ impl LineSegment {
             }
         } else {
             // Otherwise, we find the slope of both and subtract them.
-            let other_slope = Vector{inner:ov}.slope();
-            let net_slope = Vector{inner: v}.slope() - other_slope;
+            let other_slope = Vector { inner: ov }.slope();
+            let net_slope = Vector { inner: v }.slope() - other_slope;
             let y_dist = other.c1.inner.y - self.c1.inner.y
                 + (other_slope * (self.c1.inner.x - other.c1.inner.x));
             let x_delta = y_dist / net_slope;
@@ -238,15 +238,43 @@ mod tests {
 
     #[test]
     fn test_intersect_horizontal() {
-        let l1 = LineSegment::new(Point { inner: [0., 0.].into() }, Point { inner: [10., 10.].into() });
-        let l2 = LineSegment::new(Point { inner: [0., 8.].into() }, Point { inner: [20., 8.].into() });
+        let l1 = LineSegment::new(
+            Point {
+                inner: [0., 0.].into(),
+            },
+            Point {
+                inner: [10., 10.].into(),
+            },
+        );
+        let l2 = LineSegment::new(
+            Point {
+                inner: [0., 8.].into(),
+            },
+            Point {
+                inner: [20., 8.].into(),
+            },
+        );
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
     }
 
     #[test]
     fn test_intersect_regular() {
-        let l1 = LineSegment::new(Point { inner: [3., 1.].into() }, Point { inner: [13., 6.].into() });
-        let l2 = LineSegment::new(Point { inner: [10., 6.].into() }, Point { inner: [14., 2.].into() });
+        let l1 = LineSegment::new(
+            Point {
+                inner: [3., 1.].into(),
+            },
+            Point {
+                inner: [13., 6.].into(),
+            },
+        );
+        let l2 = LineSegment::new(
+            Point {
+                inner: [10., 6.].into(),
+            },
+            Point {
+                inner: [14., 2.].into(),
+            },
+        );
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
         assert_eq!(
             Some((0.6, false)),
@@ -256,7 +284,9 @@ mod tests {
         );
         assert_eq!(
             Some((1.2, false)),
-            l1.intersect_segment(&l2.translate(Vector { inner: [4.0, 2.0].into() }))
+            l1.intersect_segment(&l2.translate(Vector {
+                inner: [4.0, 2.0].into()
+            }))
         );
         assert_eq!(
             Some((-0.2, false)),
@@ -275,8 +305,22 @@ mod tests {
 
     #[test]
     fn test_intersect_direction() {
-        let l1 = LineSegment::new(Point { inner: [3., 1.].into() }, Point { inner: [13., 6.].into() });
-        let l2 = LineSegment::new(Point { inner: [10., 6.].into() }, Point { inner: [14., 2.].into() });
+        let l1 = LineSegment::new(
+            Point {
+                inner: [3., 1.].into(),
+            },
+            Point {
+                inner: [13., 6.].into(),
+            },
+        );
+        let l2 = LineSegment::new(
+            Point {
+                inner: [10., 6.].into(),
+            },
+            Point {
+                inner: [14., 2.].into(),
+            },
+        );
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
         assert_eq!(Some((0.8, true)), l1.intersect_segment(&l2.reverse()));
         assert_eq!(Some((0.2, true)), l1.reverse().intersect_segment(&l2));

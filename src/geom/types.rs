@@ -10,12 +10,9 @@ pub trait VectorContainer {
     fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self;
 }
 
-trait VectorActions {
-}
+trait VectorActions {}
 
-impl<T> VectorActions for T where T: VectorContainer {
-
-}
+impl<T> VectorActions for T where T: VectorContainer {}
 
 pub trait PointActions {
     fn translate(self, amount: Vector) -> Self;
@@ -26,7 +23,7 @@ pub trait PointActions {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Point {
     #[wasm_bindgen(skip)]
-    pub inner: Point2<f64>
+    pub inner: Point2<f64>,
 }
 
 impl PointContainer for Point {
@@ -35,13 +32,20 @@ impl PointContainer for Point {
     }
 }
 
-impl<T> PointActions for T where T: PointContainer {
+impl<T> PointActions for T
+where
+    T: PointContainer,
+{
     fn translate(self: T, amount: Vector) -> Self {
-        self.apply(&|x| Point { inner: x.inner + amount.inner })
+        self.apply(&|x| Point {
+            inner: x.inner + amount.inner,
+        })
     }
 
     fn xy_flip(self: T) -> Self {
-        self.apply(&|x| Point { inner: [x.inner.y, x.inner.x].into() })
+        self.apply(&|x| Point {
+            inner: [x.inner.y, x.inner.x].into(),
+        })
     }
 }
 
@@ -49,7 +53,7 @@ impl<T> PointActions for T where T: PointContainer {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector {
     #[wasm_bindgen(skip)]
-    pub inner: Vector2<f64>
+    pub inner: Vector2<f64>,
 }
 
 impl Vector {
@@ -59,10 +63,7 @@ impl Vector {
 
     pub fn from_angle(radians: f64) -> Vector {
         Vector {
-            inner: Vector2::<f64>::new(
-                radians.cos(),
-                radians.sin()
-            )
+            inner: Vector2::<f64>::new(radians.cos(), radians.sin()),
         }
     }
 }
@@ -74,6 +75,8 @@ pub type Point3f = Point3<f64>;
 
 impl From<Vector> for Point {
     fn from(v: Vector) -> Point {
-        Point {inner: v.inner.into()}
+        Point {
+            inner: v.inner.into(),
+        }
     }
 }

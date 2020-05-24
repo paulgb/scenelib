@@ -22,10 +22,18 @@ impl WriteSVG for Plot {
 
         let mut doc = Document::new().set(
             "viewBox",
-            format!("{} {} {} {}", lower_bound.inner.x - margin, lower_bound.inner.y - margin, w + margin * 2., h + margin * 2.),
+            format!(
+                "{} {} {} {}",
+                lower_bound.inner.x - margin,
+                lower_bound.inner.y - margin,
+                w + margin * 2.,
+                h + margin * 2.
+            ),
         );
         let mut path_data = Data::new();
-        let mut last: Point = Point {inner: [0., 0.].into()};
+        let mut last: Point = Point {
+            inner: [0., 0.].into(),
+        };
 
         for line in &self.lines {
             if last != line.c1 {

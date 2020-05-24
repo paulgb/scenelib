@@ -2,7 +2,7 @@ use scenelib::prelude::*;
 
 fn main() {
     let mut scene3d: Scene3 = Scene3::new();
-    
+
     for i in 0..40 {
         for j in 0..40 {
             let x: f64 = i as f64 * 101.;

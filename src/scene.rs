@@ -1,8 +1,8 @@
 use crate::geom::line_segment::LineSegment;
 use crate::geom::polygon::Polygon;
-use rstar::{RTree, RTreeObject, AABB};
-use crate::plot::Plot;
 use crate::geom::types::Point;
+use crate::plot::Plot;
+use rstar::{RTree, RTreeObject, AABB};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -21,8 +21,12 @@ impl Scene {
 
     pub fn to_plot(&self) -> Plot {
         let bounds = self.lines.root().envelope();
-        let lower_bound: Point = Point {inner: bounds.lower().into()};
-        let upper_bound: Point = Point {inner: bounds.upper().into()};
+        let lower_bound: Point = Point {
+            inner: bounds.lower().into(),
+        };
+        let upper_bound: Point = Point {
+            inner: bounds.upper().into(),
+        };
         let lines = self.lines.iter().map(|d| *d).collect();
 
         Plot::new(lines, lower_bound, upper_bound)
@@ -90,9 +94,14 @@ impl Scene {
                     break;
                 } else if frac >= last {
                     if draw {
-                        new_segments.push(LineSegment::new(Point {inner: line.c1.inner + v * last},
-                            
-                            Point {inner: line.c1.inner + v * frac}));
+                        new_segments.push(LineSegment::new(
+                            Point {
+                                inner: line.c1.inner + v * last,
+                            },
+                            Point {
+                                inner: line.c1.inner + v * frac,
+                            },
+                        ));
                     }
 
                     last = frac;
@@ -110,7 +119,12 @@ impl Scene {
             }
 
             if draw {
-                new_segments.push(LineSegment::new(Point{inner:line.c1.inner + v * last}, line.c2));
+                new_segments.push(LineSegment::new(
+                    Point {
+                        inner: line.c1.inner + v * last,
+                    },
+                    line.c2,
+                ));
             }
         }
 
@@ -149,14 +163,29 @@ mod tests {
     fn test_double_intersection() {
         let mut sc = Scene::new();
 
-        let line = LineSegment::new(Point {inner: [0., 0.].into()}, Point {inner: [10., 0.].into()});
+        let line = LineSegment::new(
+            Point {
+                inner: [0., 0.].into(),
+            },
+            Point {
+                inner: [10., 0.].into(),
+            },
+        );
         sc.add_segment(line);
 
         let poly = Polygon::new(vec![
-            Point {inner: [10., 5.].into()},
-            Point {inner: [5., 0.].into()},
-            Point {inner: [10., -5.].into()},
-            Point {inner: [15., 0.].into()},
+            Point {
+                inner: [10., 5.].into(),
+            },
+            Point {
+                inner: [5., 0.].into(),
+            },
+            Point {
+                inner: [10., -5.].into(),
+            },
+            Point {
+                inner: [15., 0.].into(),
+            },
         ]);
 
         sc.fill_poly(&poly);
@@ -165,8 +194,12 @@ mod tests {
 
         assert_eq!(
             vec![&LineSegment::new(
-                Point {inner: [0., 0.].into()},
-                Point {inner: [5., 0.].into()}
+                Point {
+                    inner: [0., 0.].into()
+                },
+                Point {
+                    inner: [5., 0.].into()
+                }
             )],
             result
         );
@@ -176,14 +209,29 @@ mod tests {
     fn test_double_cut() {
         let mut sc = Scene::new();
 
-        let line = LineSegment::new(Point {inner: [0., 0.].into()}, Point {inner: [10., 0.].into()});
+        let line = LineSegment::new(
+            Point {
+                inner: [0., 0.].into(),
+            },
+            Point {
+                inner: [10., 0.].into(),
+            },
+        );
         sc.add_segment(line);
 
         let poly = Polygon::new(vec![
-            Point {inner: [8., 0.].into()},
-            Point {inner: [7., 1.].into()},
-            Point {inner: [8., 2.].into()},
-            Point {inner: [9., 1.].into()},
+            Point {
+                inner: [8., 0.].into(),
+            },
+            Point {
+                inner: [7., 1.].into(),
+            },
+            Point {
+                inner: [8., 2.].into(),
+            },
+            Point {
+                inner: [9., 1.].into(),
+            },
         ]);
 
         sc.fill_poly(&poly);
@@ -193,8 +241,22 @@ mod tests {
 
         assert_eq!(
             vec![
-                &LineSegment::new(Point {inner: [0., 0.].into()}, Point {inner: [8., 0.].into()}),
-                &LineSegment::new(Point {inner: [8., 0.].into()}, Point {inner: [10., 0.].into()})
+                &LineSegment::new(
+                    Point {
+                        inner: [0., 0.].into()
+                    },
+                    Point {
+                        inner: [8., 0.].into()
+                    }
+                ),
+                &LineSegment::new(
+                    Point {
+                        inner: [8., 0.].into()
+                    },
+                    Point {
+                        inner: [10., 0.].into()
+                    }
+                )
             ],
             result
         );
@@ -204,25 +266,80 @@ mod tests {
     fn test_basic_cases() {
         let mut sc = Scene::new();
 
-        let untouched_line = LineSegment::new(Point {inner: [0., 9.].into()}, Point{inner: [6., 9.].into()});
+        let untouched_line = LineSegment::new(
+            Point {
+                inner: [0., 9.].into(),
+            },
+            Point {
+                inner: [6., 9.].into(),
+            },
+        );
         sc.add_segment(untouched_line);
 
-        let completely_removed_line = LineSegment::new(Point{inner: [2., 5.].into()}, Point{inner: [4., 5.].into()});
+        let completely_removed_line = LineSegment::new(
+            Point {
+                inner: [2., 5.].into(),
+            },
+            Point {
+                inner: [4., 5.].into(),
+            },
+        );
         sc.add_segment(completely_removed_line);
 
-        let clipped_line = LineSegment::new(Point{inner: [4., 5.].into()}, Point{inner: [4., 10.].into()});
+        let clipped_line = LineSegment::new(
+            Point {
+                inner: [4., 5.].into(),
+            },
+            Point {
+                inner: [4., 10.].into(),
+            },
+        );
         sc.add_segment(clipped_line);
-        let expected_clipped = LineSegment::new(Point{inner: [4., 7.].into()}, Point{inner: [4., 10.].into()});
+        let expected_clipped = LineSegment::new(
+            Point {
+                inner: [4., 7.].into(),
+            },
+            Point {
+                inner: [4., 10.].into(),
+            },
+        );
 
-        let split_line = LineSegment::new(Point{inner: [0., 3.].into()}, Point{inner: [10., 3.].into()});
+        let split_line = LineSegment::new(
+            Point {
+                inner: [0., 3.].into(),
+            },
+            Point {
+                inner: [10., 3.].into(),
+            },
+        );
         sc.add_segment(split_line);
-        let expected_split1 = LineSegment::new(Point{inner: [0., 3.].into()}, Point{inner: [2., 3.].into()});
-        let expected_split2 = LineSegment::new(Point{inner: [4., 3.].into()}, Point{inner: [10., 3.].into()});
+        let expected_split1 = LineSegment::new(
+            Point {
+                inner: [0., 3.].into(),
+            },
+            Point {
+                inner: [2., 3.].into(),
+            },
+        );
+        let expected_split2 = LineSegment::new(
+            Point {
+                inner: [4., 3.].into(),
+            },
+            Point {
+                inner: [10., 3.].into(),
+            },
+        );
 
         let poly = Polygon::new(vec![
-            Point{inner: [3., 1.].into()},
-            Point{inner: [6., 7.].into()},
-            Point{inner: [0., 7.].into()},
+            Point {
+                inner: [3., 1.].into(),
+            },
+            Point {
+                inner: [6., 7.].into(),
+            },
+            Point {
+                inner: [0., 7.].into(),
+            },
         ]);
         sc.fill_poly(&poly);
         let mut result: Vec<&LineSegment> = sc.lines.iter().collect();
@@ -243,33 +360,58 @@ mod tests {
     #[test]
     fn test_polygon_hole() {
         let mut sc = Scene::new();
-        let line1 = LineSegment::new(Point{inner: [2., 7.].into()}, Point{inner: [12., 7.].into()});
+        let line1 = LineSegment::new(
+            Point {
+                inner: [2., 7.].into(),
+            },
+            Point {
+                inner: [12., 7.].into(),
+            },
+        );
         sc.add_segment(line1);
 
         let poly = Polygon::with_holes(
             vec![
-                Point{inner: [0., 0.].into()},
-                Point{inner: [0., 15.].into()},
-                Point{inner: [15., 15.].into()},
-                Point{inner: [15., 0.].into()},
+                Point {
+                    inner: [0., 0.].into(),
+                },
+                Point {
+                    inner: [0., 15.].into(),
+                },
+                Point {
+                    inner: [15., 15.].into(),
+                },
+                Point {
+                    inner: [15., 0.].into(),
+                },
             ],
             vec![vec![
-                Point{inner: [10., 5.].into()},
-                Point{inner: [10., 10.].into()},
-                Point{inner: [5., 10.].into()},
-                Point{inner: [5., 5.].into()},
-                ]],
+                Point {
+                    inner: [10., 5.].into(),
+                },
+                Point {
+                    inner: [10., 10.].into(),
+                },
+                Point {
+                    inner: [5., 10.].into(),
+                },
+                Point {
+                    inner: [5., 5.].into(),
+                },
+            ]],
         );
         sc.fill_poly(&poly);
 
         let result: Vec<&LineSegment> = sc.lines.iter().collect();
 
         let expected = LineSegment::new(
-            Point{inner: [5., 7.].into()},
-            Point{inner: [10., 7.].into()}
+            Point {
+                inner: [5., 7.].into(),
+            },
+            Point {
+                inner: [10., 7.].into(),
+            },
         );
-        assert_eq!(vec![
-            &expected
-        ], result)
+        assert_eq!(vec![&expected], result)
     }
 }
