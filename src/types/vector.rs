@@ -32,4 +32,10 @@ impl Vector {
     }
 }
 
+impl std::fmt::Display for Vector {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "vec({}, {})", self.inner.x, self.inner.y)
+    }
+}
+
 pub type Vec3f = Vector3<f64>;
