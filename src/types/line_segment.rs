@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 
-use crate::geom::types::{Point, Vector};
-use crate::geom::types::{PointActions, PointContainer};
+use crate::types::point::{Point, PointActions, PointContainer};
+use crate::types::vector::Vector;
 use rstar::{RTreeObject, AABB};
 
 // A very small number to be used in calculations to avoid some

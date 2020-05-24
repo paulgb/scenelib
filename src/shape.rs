@@ -1,8 +1,6 @@
-use crate::geom::polygon::Polygon;
-use crate::geom::types::{Point, Vector};
-use na::Rotation2;
-use nalgebra::geometry::UnitComplex;
-use nalgebra::Vector2;
+use crate::types::point::Point;
+use crate::types::polygon::Polygon;
+use crate::types::vector::Vector;
 use wasm_bindgen::prelude::*;
 
 use std::f64::consts::PI;

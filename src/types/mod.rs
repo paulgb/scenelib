@@ -1,4 +1,4 @@
 pub mod line_segment;
+pub mod point;
 pub mod polygon;
-pub mod types;
-//pub mod traits;
+pub mod vector;

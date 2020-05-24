@@ -1,5 +1,5 @@
 pub mod export;
-pub mod geom;
+pub mod types;
 pub mod optimizer;
 pub mod plot;
 pub mod prelude;

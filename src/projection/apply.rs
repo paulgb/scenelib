@@ -1,4 +1,4 @@
-use crate::geom::types::Vec3f;
+use crate::types::vector::Vec3f;
 use crate::projection::transform::Transform;
 use nalgebra::Translation3;
 

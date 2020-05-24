@@ -1,4 +1,4 @@
-use crate::geom::types::Point3f;
+use crate::types::point::Point3f;
 use crate::projection::form::Form;
 use crate::projection::polygon3::Polygon3;
 

@@ -1,4 +1,5 @@
-use crate::geom::types::{Point3f, Vec3f};
+use crate::types::point::{Point3f};
+use crate::types::vector::{Vec3f};
 use nalgebra::{Perspective3, Rotation3, Translation3};
 
 pub trait Transform {

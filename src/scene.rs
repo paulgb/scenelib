@@ -1,6 +1,6 @@
-use crate::geom::line_segment::LineSegment;
-use crate::geom::polygon::Polygon;
-use crate::geom::types::Point;
+use crate::types::line_segment::LineSegment;
+use crate::types::polygon::Polygon;
+use crate::types::point::Point;
 use crate::plot::Plot;
 use rstar::{RTree, RTreeObject, AABB};
 use wasm_bindgen::prelude::*;
@@ -27,7 +27,7 @@ impl Scene {
         let upper_bound: Point = Point {
             inner: bounds.upper().into(),
         };
-        let lines = self.lines.iter().map(|d| *d).collect();
+        let lines: Vec<LineSegment> = self.lines.iter().map(|d| *d).collect();
 
         Plot::new(lines, lower_bound, upper_bound)
     }
@@ -297,7 +297,7 @@ mod tests {
         sc.add_segment(clipped_line);
         let expected_clipped = LineSegment::new(
             Point {
-                inner: [4., 7.].into(),
+                inner: [4., 5.].into(),
             },
             Point {
                 inner: [4., 10.].into(),

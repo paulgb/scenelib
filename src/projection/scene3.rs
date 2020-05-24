@@ -1,4 +1,4 @@
-use crate::geom::polygon::Polygon;
+use crate::types::polygon::Polygon;
 use crate::projection::apply::Apply;
 use crate::projection::polygon3::Polygon3;
 use crate::projection::transform::Transform;

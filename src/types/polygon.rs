@@ -1,8 +1,7 @@
 use wasm_bindgen::prelude::*;
 
-use crate::geom::types::{Point, Vector};
-
-use crate::geom::line_segment::LineSegment;
+use crate::types::point::Point;
+use crate::types::line_segment::LineSegment;
 use rstar::{RTreeObject, AABB};
 
 #[derive(Debug)]

@@ -1,5 +1,5 @@
-use crate::geom::line_segment::LineSegment;
-use crate::geom::types::Point;
+use crate::types::line_segment::LineSegment;
+use crate::types::point::Point;
 use crate::plot::Plot;
 use rstar::{PointDistance, RTree, RTreeObject, AABB};
 

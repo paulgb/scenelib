@@ -1,5 +1,5 @@
-use crate::geom::polygon::Polygon;
-use crate::geom::types::{Point, Point3f};
+use crate::types::polygon::Polygon;
+use crate::types::point::{Point3f, Point};
 use crate::projection::apply::Apply;
 use crate::projection::transform::Transform;
 

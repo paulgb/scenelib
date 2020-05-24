@@ -1,4 +1,4 @@
-use crate::geom::types::Point;
+use crate::types::point::Point;
 use crate::plot::Plot;
 use svg::node::element::path::Data;
 use svg::node::element::Path;
