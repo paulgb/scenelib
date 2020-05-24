@@ -1,11 +1,13 @@
-use crate::geom::types::{Point2f, Vec2f};
+use wasm_bindgen::prelude::*;
+
+use crate::geom::types::{Point, Vector};
 
 use crate::geom::line_segment::LineSegment;
-use crate::geom::traits::{Rotate, Translate};
 use rstar::{RTreeObject, AABB};
 
 #[derive(Debug)]
-pub struct PointLoop(pub Vec<Point2f>);
+pub struct PointLoop(
+    pub Vec<Point>);
 
 impl PointLoop {
     pub fn line_segments(&self) -> Vec<LineSegment> {
@@ -23,8 +25,11 @@ impl PointLoop {
         result
     }
 }
+#[wasm_bindgen]
 pub struct Polygon {
+    #[wasm_bindgen(skip)]
     pub points: PointLoop,
+    #[wasm_bindgen(skip)]
     pub holes: Vec<PointLoop>
 }
 
@@ -37,7 +42,7 @@ impl std::fmt::Debug for Polygon {
             if comma {
                 write!(f, ",")?;
             }
-            write!(f, "({}, {})", point.x, point.y)?;
+            write!(f, "({}, {})", point.inner.x, point.inner.y)?;
             comma = true;
         }
         
@@ -45,20 +50,19 @@ impl std::fmt::Debug for Polygon {
     }
 }
 
-
 impl RTreeObject for Polygon
 {
     type Envelope = AABB<[f64; 2]>;
 
     fn envelope(&self) -> Self::Envelope
     {
-        let points: Vec<[f64; 2]> = self.points.0.iter().map(|p| [p.x, p.y]).collect();
+        let points: Vec<[f64; 2]> = self.points.0.iter().map(|p| [p.inner.x, p.inner.y]).collect();
         AABB::from_points(&points)
     }
 }
 
 impl Polygon {
-    pub fn new(points: Vec<Point2f>) -> Polygon {
+    pub fn new(points: Vec<Point>) -> Polygon {
         Polygon {
             points: PointLoop(points),
             holes: Vec::new()
@@ -67,28 +71,15 @@ impl Polygon {
 
     pub fn from_coords(coords: Vec<(f64, f64)>) -> Polygon {
         Polygon {
-            points: PointLoop(coords.iter().map(|d| Point2f::new(d.0, d.1)).collect()),
+            points: PointLoop(coords.iter().map(|d| Point {inner: [d.0, d.1].into()}).collect()),
             holes: Vec::new()
         }
     }
 
-    pub fn with_holes(points: Vec<Point2f>, holes: Vec<Vec<Point2f>>) -> Polygon {
+    pub fn with_holes(points: Vec<Point>, holes: Vec<Vec<Point>>) -> Polygon {
         Polygon {
             points: PointLoop(points),
             holes: holes.iter().map(|p| PointLoop(p.clone())).collect()
         }
-    }
-
-}
-
-impl Rotate for Polygon {
-    fn rotate(&self, center: Point2f, radians: f64) -> Polygon {
-        Polygon::new(self.points.0.iter().map(|c: &Point2f| c.rotate(center, radians)).collect())
-    }
-}
-
-impl Translate for Polygon {
-    fn translate(&self, dist: Vec2f) -> Polygon {
-        Polygon::new(self.points.0.iter().map(|c: &Point2f| c.translate(dist)).collect())
     }
 }

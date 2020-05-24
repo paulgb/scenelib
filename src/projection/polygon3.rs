@@ -1,4 +1,4 @@
-use crate::geom::types::{Point2f, Point3f};
+use crate::geom::types::{Point, Point3f};
 use crate::geom::polygon::Polygon;
 use crate::projection::transform::Transform;
 use crate::projection::apply::Apply;
@@ -20,7 +20,7 @@ impl Polygon3 {
         // This drops the z component from each point, but also inverts the y axis because SVG screen
         // coordinates increase going down.
         Polygon::new(
-            self.points.iter().map(|d| Point2f::new(d.x, -d.y)).collect())
+            self.points.iter().map(|d| Point {inner: [d.x, -d.y].into()}).collect())
     }
 }
 
@@ -31,7 +31,7 @@ impl Polygon3 {
 
     pub fn from_poly(poly: &Polygon) -> Polygon3 {
         let points: Vec<Point3f> = poly.points.0.iter().map(
-            |p: &Point2f| Point3f::new(p.x, p.y, 0.0)).collect();
+            |p: &Point| Point3f::new(p.inner.x, p.inner.y, 0.0)).collect();
         Polygon3 {
             points
         }

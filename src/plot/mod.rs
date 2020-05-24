@@ -1,23 +1,29 @@
 pub mod cost;
 
 use crate::geom::line_segment::LineSegment;
-use crate::geom::types::Point2f;
+use crate::geom::types::Point;
 use crate::plot::cost::PlotCost;
+use wasm_bindgen::prelude::*;
 
+#[wasm_bindgen]
 pub struct Plot {
+    #[wasm_bindgen(skip)]
     pub lines: Vec<LineSegment>,
-    pub lower_bound: Point2f,
-    pub upper_bound: Point2f,
-    pub origin: Point2f,
+    #[wasm_bindgen(skip)]
+    pub lower_bound: Point,
+    #[wasm_bindgen(skip)]
+    pub upper_bound: Point,
+    #[wasm_bindgen(skip)]
+    pub origin: Point,
 }
 
 impl Plot {
-    pub fn new(lines: Vec<LineSegment>, lower_bound: Point2f, upper_bound: Point2f) -> Plot {
+    pub fn new(lines: Vec<LineSegment>, lower_bound: Point, upper_bound: Point) -> Plot {
         Plot {
             lines,
             lower_bound,
             upper_bound,
-            origin: Point2f::new(0., 0.)
+            origin: Point {inner: [0., 0.].into()}
         }
     }
 
@@ -31,15 +37,15 @@ impl Plot {
 
         for line in &self.lines {
             if line.c1 != last {
-                move_cost += (line.c1 - last).norm();
+                move_cost += (line.c1.inner - last.inner).norm();
                 moves += 1;
             }
-            line_cost += (line.c2 - line.c1).norm();
+            line_cost += (line.c2.inner - line.c1.inner).norm();
             last = line.c2;
             segments += 1;
         }
 
-        move_cost += (self.origin - last).norm();
+        move_cost += (self.origin.inner - last.inner).norm();
 
         PlotCost {
             move_cost,

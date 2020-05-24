@@ -1,12 +1,12 @@
 use crate::geom::line_segment::LineSegment;
-use crate::geom::types::Point2f;
+use crate::geom::types::Point;
 use crate::plot::Plot;
 use rstar::{PointDistance, RTree, RTreeObject, AABB};
 
 #[derive(PartialEq, Clone)]
 struct TreeElement {
-    start: Point2f,
-    end: Point2f,
+    start: Point,
+    end: Point,
 }
 
 impl TreeElement {
@@ -22,13 +22,13 @@ impl RTreeObject for TreeElement {
     type Envelope = AABB<[f64; 2]>;
 
     fn envelope(&self) -> Self::Envelope {
-        AABB::from_corners([self.start.x, self.start.y], [self.start.x, self.start.y])
+        AABB::from_corners([self.start.inner.x, self.start.inner.y], [self.start.inner.x, self.start.inner.y])
     }
 }
 
 impl PointDistance for TreeElement {
     fn distance_2(&self, point: &[f64; 2]) -> f64 {
-        (self.start - Point2f::from(*point)).norm()
+        (self.start.inner - na::Point::from(*point)).norm()
     }
 }
 
@@ -55,7 +55,7 @@ pub fn greedy_optimize(plot: Plot) -> Plot {
     let mut cursor = plot.origin;
 
     while tree.size() > 0 {
-        let next = (*tree.nearest_neighbor(&[cursor.x, cursor.y]).unwrap()).clone();
+        let next = (*tree.nearest_neighbor(&[cursor.inner.x, cursor.inner.y]).unwrap()).clone();
 
         lines.push(LineSegment::new(next.start, next.end));
         cursor = next.end;

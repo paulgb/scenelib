@@ -1,5 +1,7 @@
-use crate::geom::traits::{Slope, Translate, XYFlip};
-use crate::geom::types::{Point2f, Vec2f};
+use wasm_bindgen::prelude::*;
+
+use crate::geom::types::{Point, Vector};
+use crate::geom::types::{PointActions, PointContainer};
 use rstar::{RTreeObject, AABB};
 
 // A very small number to be used in calculations to avoid some
@@ -7,10 +9,22 @@ use rstar::{RTreeObject, AABB};
 // to the lowest order of magnitude where the issues disappear.
 const EPSILON: f64 = 1e-14;
 
+#[wasm_bindgen]
 #[derive(PartialEq, Clone, Copy)]
 pub struct LineSegment {
-    pub c1: Point2f,
-    pub c2: Point2f,
+    #[wasm_bindgen(skip)]
+    pub c1: Point,
+    #[wasm_bindgen(skip)]
+    pub c2: Point,
+}
+
+impl PointContainer for LineSegment {
+    fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self {
+        LineSegment {
+            c1: self.c1.apply(lambda),
+            c2: self.c1.apply(lambda),
+        }
+    }
 }
 
 impl std::fmt::Debug for LineSegment {
@@ -18,7 +32,7 @@ impl std::fmt::Debug for LineSegment {
         write!(
             f,
             "Line(({}, {}), ({}, {}))",
-            self.c1.x, self.c1.y, self.c2.x, self.c2.y
+            self.c1.inner.x, self.c1.inner.y, self.c2.inner.x, self.c2.inner.y
         )
     }
 }
@@ -27,8 +41,18 @@ impl Eq for LineSegment {}
 
 impl PartialOrd for LineSegment {
     fn partial_cmp(&self, other: &LineSegment) -> Option<std::cmp::Ordering> {
-        (self.c1.x, self.c1.y, self.c2.x, self.c2.y)
-            .partial_cmp(&(other.c1.x, other.c1.y, other.c2.x, other.c2.y))
+        (
+            self.c1.inner.x,
+            self.c1.inner.y,
+            self.c2.inner.x,
+            self.c2.inner.y,
+        )
+            .partial_cmp(&(
+                other.c1.inner.x,
+                other.c1.inner.y,
+                other.c2.inner.x,
+                other.c2.inner.y,
+            ))
     }
 }
 
@@ -42,24 +66,15 @@ impl RTreeObject for LineSegment {
     type Envelope = AABB<[f64; 2]>;
 
     fn envelope(&self) -> Self::Envelope {
-        AABB::from_corners([self.c1.x, self.c1.y], [self.c2.x, self.c2.y])
-    }
-}
-
-impl XYFlip for LineSegment {
-    fn xy_flip(&self) -> LineSegment {
-        LineSegment::new(self.c1.xy_flip(), self.c2.xy_flip())
-    }
-}
-
-impl Translate for LineSegment {
-    fn translate(&self, dist: Vec2f) -> LineSegment {
-        LineSegment::new(self.c1.translate(dist), self.c2.translate(dist))
+        AABB::from_corners(
+            [self.c1.inner.x, self.c1.inner.y],
+            [self.c2.inner.x, self.c2.inner.y],
+        )
     }
 }
 
 impl LineSegment {
-    pub fn new(c1: Point2f, c2: Point2f) -> LineSegment {
+    pub fn new(c1: Point, c2: Point) -> LineSegment {
         LineSegment { c1, c2 }
     }
 
@@ -70,8 +85,10 @@ impl LineSegment {
         }
     }
 
-    pub fn vector(&self) -> Vec2f {
-        self.c2 - self.c1
+    pub fn vector(&self) -> Vector {
+        Vector {
+            inner: self.c2.inner - self.c1.inner,
+        }
     }
 
     pub fn intersect_segment(&self, other: &LineSegment) -> Option<(f64, bool)> {
@@ -79,7 +96,7 @@ impl LineSegment {
         // line segment intersect it? If so, return the fraction along our
         // segment at which the intersection occurs and the direction.
 
-        let v = self.vector();
+        let v = self.vector().inner;
 
         // The algorithm assumes that the current line has finite slope (i.e. that
         // it is neither vertical nor a point), so we handle a few special cases:
@@ -97,7 +114,8 @@ impl LineSegment {
             }
         } else {
             if (v.x / v.y).abs() < EPSILON {
-                if let Some((frac, direction)) = self.xy_flip().intersect_segment(&other.xy_flip())
+                if let Some((frac, direction)) =
+                    (*self).xy_flip().intersect_segment(&other.xy_flip())
                 {
                     // Direction flips across x/y.
                     return Some((frac, !direction));
@@ -107,7 +125,7 @@ impl LineSegment {
             }
         }
 
-        let ov = other.vector();
+        let ov = other.vector().inner;
 
         // If we extend both lines to infinity, there are three possible cases:
         // 1. The lines are parallel and never intersect.
@@ -139,30 +157,31 @@ impl LineSegment {
             // If the other line has (near) infinite slope, special case.
             // We know the lines cross at x = other.c1.x, so we just have to
             // find that value along x.
-            let frac = (other.c1.x - self.c1.x) / (self.c2.x - self.c1.x);
-            let y = self.c1.y + v.y * frac;
+            let frac = (other.c1.inner.x - self.c1.inner.x) / (self.c2.inner.x - self.c1.inner.x);
+            let y = self.c1.inner.y + v.y * frac;
 
-            if (y - other.c1.y) * (y - other.c2.y) > 0. {
+            if (y - other.c1.inner.y) * (y - other.c2.inner.y) > 0. {
                 None
             } else {
                 Some((frac, direction))
             }
         } else {
             // Otherwise, we find the slope of both and subtract them.
-            let other_slope = ov.slope();
-            let net_slope = v.slope() - other_slope;
-            let y_dist = other.c1.y - self.c1.y + (other_slope * (self.c1.x - other.c1.x));
+            let other_slope = Vector{inner:ov}.slope();
+            let net_slope = Vector{inner: v}.slope() - other_slope;
+            let y_dist = other.c1.inner.y - self.c1.inner.y
+                + (other_slope * (self.c1.inner.x - other.c1.inner.x));
             let x_delta = y_dist / net_slope;
 
             let frac = x_delta / v.x;
-            let x = x_delta + self.c1.x;
+            let x = x_delta + self.c1.inner.x;
 
             if frac.is_nan() {
                 // The lines may intersect but have the same slope.
                 return None;
             }
 
-            if (x - other.c1.x) * (x - other.c2.x) > EPSILON {
+            if (x - other.c1.inner.x) * (x - other.c2.inner.x) > EPSILON {
                 None
             } else {
                 Some((frac, direction))
@@ -177,61 +196,87 @@ mod tests {
 
     #[test]
     fn test_intersect_vertical() {
-        let l1 = LineSegment::new(Point2f::new(0., 5.), Point2f::new(10., 5.));
-        let l2 = LineSegment::new(Point2f::new(5., 0.), Point2f::new(5., 10.));
+        let l1 = LineSegment::new(
+            Point {
+                inner: [0., 5.].into(),
+            },
+            Point {
+                inner: [10., 5.].into(),
+            },
+        );
+        let l2 = LineSegment::new(
+            Point {
+                inner: [5., 0.].into(),
+            },
+            Point {
+                inner: [5., 10.].into(),
+            },
+        );
 
         assert_eq!(Some((0.5, true)), l1.intersect_segment(&l2));
         assert_eq!(
             Some((1.5, true)),
-            l1.intersect_segment(&l2.translate(Vec2f::new(10., 0.)))
+            l1.intersect_segment(&l2.translate(Vector {
+                inner: [10., 0.].into()
+            }))
         );
 
         // The other line segment never intersects the current line.
         assert_eq!(
             None,
-            l1.intersect_segment(&l2.translate(Vec2f::new(0., 10.)))
+            l1.intersect_segment(&l2.translate(Vector {
+                inner: [0., 10.].into()
+            }))
         );
         assert_eq!(
             None,
-            l1.intersect_segment(&l2.translate(Vec2f::new(10., 10.)))
+            l1.intersect_segment(&l2.translate(Vector {
+                inner: [10., 10.].into()
+            }))
         );
     }
 
     #[test]
     fn test_intersect_horizontal() {
-        let l1 = LineSegment::new(Point2f::new(0., 0.), Point2f::new(10., 10.));
-        let l2 = LineSegment::new(Point2f::new(0., 8.), Point2f::new(20., 8.));
+        let l1 = LineSegment::new(Point { inner: [0., 0.].into() }, Point { inner: [10., 10.].into() });
+        let l2 = LineSegment::new(Point { inner: [0., 8.].into() }, Point { inner: [20., 8.].into() });
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
     }
 
     #[test]
     fn test_intersect_regular() {
-        let l1 = LineSegment::new(Point2f::new(3., 1.), Point2f::new(13., 6.));
-        let l2 = LineSegment::new(Point2f::new(10., 6.), Point2f::new(14., 2.));
+        let l1 = LineSegment::new(Point { inner: [3., 1.].into() }, Point { inner: [13., 6.].into() });
+        let l2 = LineSegment::new(Point { inner: [10., 6.].into() }, Point { inner: [14., 2.].into() });
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
         assert_eq!(
             Some((0.6, false)),
-            l1.intersect_segment(&l2.translate(Vec2f::new(-2.0, -1.0)))
+            l1.intersect_segment(&l2.translate(Vector {
+                inner: [-2.0, -1.0].into()
+            }))
         );
         assert_eq!(
             Some((1.2, false)),
-            l1.intersect_segment(&l2.translate(Vec2f::new(4.0, 2.0)))
+            l1.intersect_segment(&l2.translate(Vector { inner: [4.0, 2.0].into() }))
         );
         assert_eq!(
             Some((-0.2, false)),
-            l1.intersect_segment(&l2.translate(Vec2f::new(-10.0, -5.0)))
+            l1.intersect_segment(&l2.translate(Vector {
+                inner: [-10.0, -5.0].into()
+            }))
         );
 
         assert_eq!(
             None,
-            l1.intersect_segment(&l2.translate(Vec2f::new(-20.0, -5.0)))
+            l1.intersect_segment(&l2.translate(Vector {
+                inner: [-20.0, -5.0].into()
+            }))
         );
     }
 
     #[test]
     fn test_intersect_direction() {
-        let l1 = LineSegment::new(Point2f::new(3., 1.), Point2f::new(13., 6.));
-        let l2 = LineSegment::new(Point2f::new(10., 6.), Point2f::new(14., 2.));
+        let l1 = LineSegment::new(Point { inner: [3., 1.].into() }, Point { inner: [13., 6.].into() });
+        let l2 = LineSegment::new(Point { inner: [10., 6.].into() }, Point { inner: [14., 2.].into() });
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
         assert_eq!(Some((0.8, true)), l1.intersect_segment(&l2.reverse()));
         assert_eq!(Some((0.2, true)), l1.reverse().intersect_segment(&l2));
@@ -244,12 +289,20 @@ mod tests {
     #[test]
     fn test_parallel_lines() {
         let l1 = LineSegment::new(
-            Point2f::new(84.03137539808972, -50.69242864951529),
-            Point2f::new(54.73012545327112, 11.113630310194111),
+            Point {
+                inner: [84.03137539808972, -50.69242864951529].into(),
+            },
+            Point {
+                inner: [54.73012545327112, 11.113630310194111].into(),
+            },
         );
         let l2 = LineSegment::new(
-            Point2f::new(84.03137539808972, -50.69242864951529),
-            Point2f::new(38.15776122775803, 46.07024555196011),
+            Point {
+                inner: [84.03137539808972, -50.69242864951529].into(),
+            },
+            Point {
+                inner: [38.15776122775803, 46.07024555196011].into(),
+            },
         );
         assert_eq!(None, l1.intersect_segment(&l2));
         assert_eq!(None, l1.intersect_segment(&l2.reverse()));
@@ -258,11 +311,22 @@ mod tests {
     #[test]
     fn test_near_infinite_slope() {
         let l1 = LineSegment::new(
-            Point2f::new(-0.000000000000000040274189285034336, 10.),
-            Point2f::new(-0.00000000000000003900535185736784, 0.),
+            Point {
+                inner: [-0.000000000000000040274189285034336, 10.].into(),
+            },
+            Point {
+                inner: [-0.00000000000000003900535185736784, 0.].into(),
+            },
         );
 
-        let l2 = LineSegment::new(Point2f::new(-10., 6.), Point2f::new(10., 6.));
+        let l2 = LineSegment::new(
+            Point {
+                inner: [-10., 6.].into(),
+            },
+            Point {
+                inner: [10., 6.].into(),
+            },
+        );
 
         assert_eq!(Some((0.4, true)), l1.intersect_segment(&l2));
 
