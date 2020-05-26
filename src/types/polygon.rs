@@ -1,10 +1,19 @@
 use wasm_bindgen::prelude::*;
 
-use crate::types::point::Point;
+use crate::types::point::{Point, PointContainer};
+
 use crate::types::line_segment::LineSegment;
 use rstar::{RTreeObject, AABB};
 
-#[derive(Debug)]
+
+impl PointContainer for PointLoop {
+    fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self {
+        PointLoop(self.0.iter().map(|d| lambda(*d)).collect())
+    }
+}
+
+
+#[derive(Debug, Clone)]
 pub struct PointLoop(pub Vec<Point>);
 
 impl PointLoop {
@@ -27,11 +36,21 @@ impl PointLoop {
     }
 }
 #[wasm_bindgen]
+#[derive(Clone)]
 pub struct Polygon {
     #[wasm_bindgen(skip)]
     pub points: PointLoop,
     #[wasm_bindgen(skip)]
     pub holes: Vec<PointLoop>,
+}
+
+impl PointContainer for Polygon {
+    fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self {
+        Polygon {
+            points: self.points.apply(lambda),
+            holes: self.holes.into_iter().map(|d| d.apply(lambda)).collect()
+        }
+    }
 }
 
 impl std::fmt::Debug for Polygon {

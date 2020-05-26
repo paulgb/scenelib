@@ -8,7 +8,7 @@ pub trait VectorContainer {
     fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self;
 }
 
-trait VectorActions {}
+pub trait VectorActions {}
 
 impl<T> VectorActions for T where T: VectorContainer {}
 
@@ -38,4 +38,41 @@ impl std::fmt::Display for Vector {
     }
 }
 
+impl std::ops::Div<f64> for Vector {
+    type Output = Vector;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        Vector {
+            inner: self.inner / rhs
+        }
+    }
+}
+
+impl std::ops::Mul<f64> for Vector {
+    type Output = Vector;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        Vector {
+            inner: self.inner * rhs
+        }
+    }
+}
+
+
+impl std::ops::Add<Vector> for Vector {
+    type Output = Vector;
+
+    fn add(self, rhs: Vector) -> Vector {
+        Vector {
+            inner: self.inner + rhs.inner
+        }
+    }
+}
+
+
 pub type Vec3f = Vector3<f64>;
+
+#[wasm_bindgen]
+pub fn vec(x: f64, y: f64) -> Vector {
+    Vector { inner: [x, y].into() }
+}

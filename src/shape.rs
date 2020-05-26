@@ -6,17 +6,19 @@ use wasm_bindgen::prelude::*;
 use std::f64::consts::PI;
 
 #[wasm_bindgen]
-pub fn rect(origin: Point, size: Vector) -> Polygon {
+pub fn rect() -> Polygon {
     Polygon::new(vec![
-        origin,
         Point {
-            inner: [origin.inner.x, origin.inner.y + size.inner.y].into(),
+            inner: [-0.5, -0.5].into(),
         },
         Point {
-            inner: origin.inner + size.inner,
+            inner: [-0.5, 0.5].into(),
         },
         Point {
-            inner: [origin.inner.x + size.inner.x, origin.inner.y].into(),
+            inner: [0.5, 0.5].into(),
+        },
+        Point {
+            inner: [0.5, -0.5].into(),
         },
     ])
 }
@@ -25,7 +27,8 @@ pub fn rect(origin: Point, size: Vector) -> Polygon {
 pub fn circle(divisions: usize) -> Polygon {
     Polygon::new(
         (0..divisions)
-            .map(|i| Vector::from_angle((i as f64 / divisions as f64) * PI * 2.0).into())
+            .map(|i| Vector::from_angle(
+                (i as f64 / divisions as f64) * PI * 2.0).into())
             .collect(),
     )
 }
