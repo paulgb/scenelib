@@ -22,18 +22,24 @@ impl PointContainer for LineSegment {
     fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self {
         LineSegment {
             c1: self.c1.apply(lambda),
-            c2: self.c1.apply(lambda),
+            c2: self.c2.apply(lambda),
         }
     }
 }
 
-impl std::fmt::Debug for LineSegment {
+impl std::fmt::Display for LineSegment {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
             "Line(({}, {}), ({}, {}))",
             self.c1.inner.x, self.c1.inner.y, self.c2.inner.x, self.c2.inner.y
         )
+    }
+}
+
+impl std::fmt::Debug for LineSegment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(&self, f)
     }
 }
 

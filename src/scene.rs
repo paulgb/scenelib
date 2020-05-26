@@ -297,7 +297,7 @@ mod tests {
         sc.add_segment(clipped_line);
         let expected_clipped = LineSegment::new(
             Point {
-                inner: [4., 5.].into(),
+                inner: [4., 7.].into(),
             },
             Point {
                 inner: [4., 10.].into(),
