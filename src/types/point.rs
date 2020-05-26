@@ -40,7 +40,11 @@ where
         let cosr = radians.cos();
         let sinr = radians.sin();
         self.apply(&|x| Point {
-            inner: [x.inner.x * cosr - x.inner.y * sinr, x.inner.x * sinr + x.inner.y * cosr].into(),
+            inner: [
+                x.inner.x * cosr - x.inner.y * sinr,
+                x.inner.x * sinr + x.inner.y * cosr,
+            ]
+            .into(),
         })
     }
 
@@ -78,7 +82,7 @@ impl std::ops::Add<Vector> for Point {
 
     fn add(self, rhs: Vector) -> Self::Output {
         Point {
-            inner: self.inner + rhs.inner
+            inner: self.inner + rhs.inner,
         }
     }
 }
@@ -88,13 +92,14 @@ impl std::ops::Div<f64> for Point {
 
     fn div(self, rhs: f64) -> Self::Output {
         Point {
-            inner: self.inner / rhs
+            inner: self.inner / rhs,
         }
     }
 }
 
-
 #[wasm_bindgen]
 pub fn pt(x: f64, y: f64) -> Point {
-    Point { inner: [x, y].into() }
+    Point {
+        inner: [x, y].into(),
+    }
 }

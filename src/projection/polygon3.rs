@@ -1,7 +1,7 @@
-use crate::types::polygon::Polygon;
-use crate::types::point::{Point3f, Point};
 use crate::projection::apply::Apply;
 use crate::projection::transform::Transform;
+use crate::types::point::{Point, Point3f};
+use crate::types::polygon::Polygon;
 
 #[derive(Clone)]
 pub struct Polygon3 {

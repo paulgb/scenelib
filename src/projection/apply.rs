@@ -1,5 +1,5 @@
-use crate::types::vector::Vec3f;
 use crate::projection::transform::Transform;
+use crate::types::vector::Vec3f;
 use nalgebra::Translation3;
 
 pub trait Apply {

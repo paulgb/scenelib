@@ -1,7 +1,7 @@
-use crate::types::line_segment::LineSegment;
-use crate::types::polygon::Polygon;
-use crate::types::point::Point;
 use crate::plot::Plot;
+use crate::types::line_segment::LineSegment;
+use crate::types::point::Point;
+use crate::types::polygon::Polygon;
 use rstar::{RTree, RTreeObject, AABB};
 use wasm_bindgen::prelude::*;
 

@@ -1,5 +1,5 @@
-use crate::types::point::Point;
 use crate::plot::Plot;
+use crate::types::point::Point;
 use svg::node::element::path::Data;
 use svg::node::element::Path;
 use svg::Document;

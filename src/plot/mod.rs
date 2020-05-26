@@ -1,8 +1,8 @@
 pub mod cost;
 
+use crate::plot::cost::PlotCost;
 use crate::types::line_segment::LineSegment;
 use crate::types::point::Point;
-use crate::plot::cost::PlotCost;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

@@ -5,13 +5,11 @@ use crate::types::point::{Point, PointContainer};
 use crate::types::line_segment::LineSegment;
 use rstar::{RTreeObject, AABB};
 
-
 impl PointContainer for PointLoop {
     fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self {
         PointLoop(self.0.iter().map(|d| lambda(*d)).collect())
     }
 }
-
 
 #[derive(Debug, Clone)]
 pub struct PointLoop(pub Vec<Point>);
@@ -48,7 +46,7 @@ impl PointContainer for Polygon {
     fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self {
         Polygon {
             points: self.points.apply(lambda),
-            holes: self.holes.into_iter().map(|d| d.apply(lambda)).collect()
+            holes: self.holes.into_iter().map(|d| d.apply(lambda)).collect(),
         }
     }
 }
