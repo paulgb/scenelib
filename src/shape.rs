@@ -6,19 +6,19 @@ use wasm_bindgen::prelude::*;
 use std::f64::consts::PI;
 
 #[wasm_bindgen]
-pub fn rect() -> Polygon {
+pub fn square() -> Polygon {
     Polygon::new(vec![
         Point {
-            inner: [-0.5, -0.5].into(),
+            inner: [-1., -1.].into(),
         },
         Point {
-            inner: [-0.5, 0.5].into(),
+            inner: [-1., 1.].into(),
         },
         Point {
-            inner: [0.5, 0.5].into(),
+            inner: [1., 1.].into(),
         },
         Point {
-            inner: [0.5, -0.5].into(),
+            inner: [1., -1.].into(),
         },
     ])
 }

@@ -1,0 +1,15 @@
+{
+  "name": "scenelib_examples",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.3"
+  }
+}

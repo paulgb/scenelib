@@ -1,2 +1,4 @@
 /target
 .DS_Store
+examples_ts/dist
+examples_ts/node_modules

@@ -31,12 +31,6 @@ impl Scene {
 
         Plot::new(lines, lower_bound, upper_bound)
     }
-}
-
-impl Scene {
-    pub fn bounds(&self) -> AABB<[f64; 2]> {
-        self.lines.root().envelope()
-    }
 
     pub fn add_segment(&mut self, segment: LineSegment) {
         self.lines.insert(segment);
@@ -151,6 +145,12 @@ impl Scene {
     pub fn add_poly(&mut self, poly: &Polygon) {
         self.fill_poly(poly);
         self.stroke_poly(poly);
+    }
+}
+
+impl Scene {
+    pub fn bounds(&self) -> AABB<[f64; 2]> {
+        self.lines.root().envelope()
     }
 }
 

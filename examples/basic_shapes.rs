@@ -6,7 +6,7 @@ fn main() {
     let origin = vec(-40., -40.);
     let direction = vec(80., 80.);
 
-    let s1 = rect();
+    let s1 = square();
     scene.add_poly(&circle(40).scale(40.));
 
     for i in 0..40 {
@@ -18,5 +18,5 @@ fn main() {
         scene.add_poly(&s2);
     }
 
-    scene.to_plot().write_svg("basic_shapes.svg");
+    write_svg(&scene.to_plot(), "basic_shapes.svg");
 }
