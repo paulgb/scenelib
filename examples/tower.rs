@@ -96,7 +96,7 @@ fn main() {
     let mut plot = scene.to_plot();
 
     println!("Before: {:?}", plot.cost());
-    plot = greedy_optimize(plot);
+    plot = plot.optimize();
     println!("After: {:?}", plot.cost());
     plot.write_svg("tower.svg");
 }

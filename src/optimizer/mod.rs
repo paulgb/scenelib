@@ -1,5 +1,5 @@
 use crate::geom::line_segment::LineSegment;
-use crate::plot::Plot;
+use crate::plot::Layer;
 use crate::types::Point;
 use rstar::{PointDistance, RTree, RTreeObject, AABB};
 
@@ -32,8 +32,8 @@ impl PointDistance for TreeElement {
     }
 }
 
-pub fn greedy_optimize(plot: Plot) -> Plot {
-    let points: Vec<TreeElement> = plot
+pub fn greedy_optimize(layer: Layer, origin: Point) -> Layer {
+    let points: Vec<TreeElement> = layer
         .lines
         .iter()
         .flat_map(|d| {
@@ -52,7 +52,7 @@ pub fn greedy_optimize(plot: Plot) -> Plot {
 
     let mut tree = RTree::bulk_load(points);
     let mut lines: Vec<LineSegment> = Vec::new();
-    let mut cursor = plot.origin;
+    let mut cursor = origin;
 
     while tree.size() > 0 {
         let next = (*tree.nearest_neighbor(&[cursor.x, cursor.y]).unwrap()).clone();
@@ -64,5 +64,8 @@ pub fn greedy_optimize(plot: Plot) -> Plot {
         tree.remove(&next.swap());
     }
 
-    Plot::new(lines, plot.lower_bound, plot.upper_bound)
+    Layer {
+        lines,
+        pen: layer.pen,
+    }
 }

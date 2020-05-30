@@ -1,33 +1,31 @@
 pub mod cost;
 
 use crate::geom::line_segment::LineSegment;
+use crate::optimizer::greedy_optimize;
 use crate::plot::cost::PlotCost;
 use crate::types::Point;
 
-pub struct Plot {
+#[derive(Clone)]
+pub struct Layer {
     pub lines: Vec<LineSegment>,
-    pub lower_bound: Point,
-    pub upper_bound: Point,
-    pub origin: Point,
+    pub pen: usize,
 }
 
-impl Plot {
-    pub fn new(lines: Vec<LineSegment>, lower_bound: Point, upper_bound: Point) -> Plot {
-        Plot {
-            lines,
-            lower_bound,
-            upper_bound,
-            origin: Point::new(0., 0.),
+impl Layer {
+    pub fn new(pen: usize) -> Layer {
+        Layer {
+            lines: Vec::new(),
+            pen,
         }
     }
 
-    pub fn cost(&self) -> PlotCost {
+    pub fn cost(&self, origin: Point) -> PlotCost {
         let mut move_cost = 0.;
         let mut line_cost = 0.;
         let mut segments = 0;
         let mut moves = 0;
 
-        let mut last = self.origin.clone();
+        let mut last = origin;
 
         for line in &self.lines {
             if line.c1 != last {
@@ -39,13 +37,52 @@ impl Plot {
             segments += 1;
         }
 
-        move_cost += (self.origin - last).norm();
+        move_cost += (origin - last).norm();
 
         PlotCost {
             move_cost,
             line_cost,
             segments,
             moves,
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct Plot {
+    pub layers: Vec<Layer>,
+    pub lower_bound: Point,
+    pub upper_bound: Point,
+    pub origin: Point,
+}
+
+impl Plot {
+    pub fn new(layers: Vec<Layer>, lower_bound: Point, upper_bound: Point) -> Plot {
+        Plot {
+            layers,
+            lower_bound,
+            upper_bound,
+            origin: Point::new(0., 0.),
+        }
+    }
+
+    pub fn cost(&self) -> PlotCost {
+        self.layers.iter().map(|l| l.cost(self.origin)).sum()
+    }
+
+    pub fn optimize(mut self) -> Plot {
+        let mut v = Vec::new();
+        std::mem::swap(&mut self.layers, &mut v);
+        v = v
+            .into_iter()
+            .map(|l| greedy_optimize(l, self.origin))
+            .collect();
+
+        Plot {
+            lower_bound: self.lower_bound,
+            upper_bound: self.upper_bound,
+            origin: self.origin,
+            layers: v,
         }
     }
 }

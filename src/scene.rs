@@ -1,8 +1,9 @@
 use crate::geom::line_segment::LineSegment;
 use crate::geom::polygon::Polygon;
-use crate::plot::Plot;
+use crate::plot::{Layer, Plot};
 use crate::types::Point;
 use rstar::{RTree, RTreeObject, AABB};
+use std::collections::HashMap;
 pub struct Scene {
     lines: RTree<LineSegment>,
 }
@@ -18,9 +19,19 @@ impl Scene {
         let bounds = self.lines.root().envelope();
         let lower_bound: Point = Point::from(bounds.lower());
         let upper_bound: Point = Point::from(bounds.upper());
-        let lines = self.lines.iter().map(|d| *d).collect();
 
-        Plot::new(lines, lower_bound, upper_bound)
+        let mut layers_map: HashMap<usize, Layer> = HashMap::new();
+
+        for line in &self.lines {
+            let entry = layers_map
+                .entry(line.pen)
+                .or_insert_with(|| Layer::new(line.pen));
+            entry.lines.push(line.clone());
+        }
+
+        let layers: Vec<Layer> = layers_map.values().into_iter().map(|x| x.clone()).collect();
+
+        Plot::new(layers, lower_bound, upper_bound)
     }
 
     pub fn bounds(&self) -> AABB<[f64; 2]> {
@@ -114,20 +125,24 @@ impl Scene {
         }
     }
 
-    pub fn stroke_poly(&mut self, poly: &Polygon) {
-        for line in poly.points.line_segments() {
+    pub fn stroke_poly(&mut self, poly: &Polygon, pen: usize) {
+        for line in poly.points.line_segments_with_pen(pen) {
             self.add_segment(line);
         }
         for hole in poly.holes.iter() {
-            for line in hole.line_segments() {
+            for line in hole.line_segments_with_pen(pen) {
                 self.add_segment(line);
             }
         }
     }
 
     pub fn add_poly(&mut self, poly: &Polygon) {
+        self.add_poly_with_pen(poly, 0)
+    }
+
+    pub fn add_poly_with_pen(&mut self, poly: &Polygon, pen: usize) {
         self.fill_poly(poly);
-        self.stroke_poly(poly);
+        self.stroke_poly(poly, pen);
     }
 }
 

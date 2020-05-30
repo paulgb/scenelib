@@ -8,6 +8,10 @@ pub struct PointLoop(pub Vec<Point>);
 
 impl PointLoop {
     pub fn line_segments(&self) -> Vec<LineSegment> {
+        self.line_segments_with_pen(0)
+    }
+
+    pub fn line_segments_with_pen(&self, pen: usize) -> Vec<LineSegment> {
         let PointLoop(points) = self;
         let mut result = Vec::new();
         if points.len() < 2 {
@@ -19,29 +23,30 @@ impl PointLoop {
         ));
 
         for i in 0..(points.len() - 1) {
-            result.push(LineSegment::new(points[i], points[i + 1]))
+            result.push(LineSegment::new_with_pen(points[i], points[i + 1], pen))
         }
 
         result
     }
 }
 
-impl PointContainer for PointLoop {
-    fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self {
-        PointLoop(self.0.iter().map(|d| lambda(*d)).collect())
-    }
-}
 #[derive(Clone)]
 pub struct Polygon {
     pub points: PointLoop,
     pub holes: Vec<PointLoop>,
 }
 
+impl PointContainer for PointLoop {
+    fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self {
+        PointLoop(self.0.into_iter().map(|p| lambda(p)).collect())
+    }
+}
+
 impl PointContainer for Polygon {
     fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self {
         Polygon {
             points: self.points.apply(lambda),
-            holes: self.holes.into_iter().map(|d| d.apply(lambda)).collect(),
+            holes: self.holes.into_iter().map(|h| h.apply(lambda)).collect(),
         }
     }
 }

@@ -10,6 +10,7 @@ const EPSILON: f64 = 1e-14;
 pub struct LineSegment {
     pub c1: Point,
     pub c2: Point,
+    pub pen: usize,
 }
 
 impl PointContainer for LineSegment {
@@ -17,6 +18,7 @@ impl PointContainer for LineSegment {
         LineSegment {
             c1: self.c1.apply(lambda),
             c2: self.c2.apply(lambda),
+            pen: self.pen,
         }
     }
 }
@@ -56,13 +58,18 @@ impl RTreeObject for LineSegment {
 
 impl LineSegment {
     pub fn new(c1: Point, c2: Point) -> LineSegment {
-        LineSegment { c1, c2 }
+        LineSegment { c1, c2, pen: 0 }
+    }
+
+    pub fn new_with_pen(c1: Point, c2: Point, pen: usize) -> LineSegment {
+        LineSegment { c1, c2, pen }
     }
 
     pub fn reverse(&self) -> LineSegment {
         LineSegment {
             c1: self.c2,
             c2: self.c1,
+            pen: self.pen,
         }
     }
 
