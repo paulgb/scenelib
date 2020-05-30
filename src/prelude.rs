@@ -13,5 +13,5 @@ pub use crate::projection::platonic::{cube, tetrahedron};
 pub use crate::projection::polygon3::Polygon3;
 pub use crate::projection::scene3::Scene3;
 pub use crate::scene::Scene;
-pub use crate::shape::{circle, ellipse, rect};
+pub use crate::shape::{circle, rect};
 pub use crate::types::{pt, vec, Point, PointActions, Vector, VectorExtension};

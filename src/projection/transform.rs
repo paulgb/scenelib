@@ -17,14 +17,6 @@ impl Transform for Translation3<f64> {
     }
 }
 
-/*
-impl Transform for Matrix4<f64> {
-    fn transform_point(&self, point: Point3f) -> Point3f {
-        Point3f::from_homogeneous(self * point.to_homogeneous()).unwrap()
-    }
-}
-*/
-
 impl Transform for Perspective3<f64> {
     fn transform_point(&self, point: Point3f) -> Point3f {
         self.project_point(&point)

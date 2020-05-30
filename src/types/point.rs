@@ -9,6 +9,7 @@ pub trait PointContainer {
 pub trait PointActions {
     fn translate(self, amount: Vector) -> Self;
     fn scale(self, amount: f64) -> Self;
+    fn scale2(self, amount: Vector) -> Self;
     fn rotate(self, amount: f64) -> Self;
     fn xy_flip(self) -> Self;
 }
@@ -27,6 +28,10 @@ where
 {
     fn scale(self: T, amount: f64) -> Self {
         self.apply(&|x| x * amount)
+    }
+
+    fn scale2(self: T, amount: Vector) -> Self {
+        self.apply(&|x| Point::new(x.x * amount.x, x.y * amount.y))
     }
 
     fn rotate(self: T, radians: f64) -> Self {
