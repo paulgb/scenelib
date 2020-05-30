@@ -17,9 +17,10 @@ impl PointLoop {
         if points.len() < 2 {
             return result;
         }
-        result.push(LineSegment::new(
+        result.push(LineSegment::new_with_pen(
             *points.last().unwrap(),
             *points.first().unwrap(),
+            pen,
         ));
 
         for i in 0..(points.len() - 1) {

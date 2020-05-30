@@ -94,7 +94,11 @@ impl Scene {
                     break;
                 } else if frac >= last {
                     if draw {
-                        new_segments.push(LineSegment::new(line.c1 + v * last, line.c1 + v * frac));
+                        new_segments.push(LineSegment::new_with_pen(
+                            line.c1 + v * last,
+                            line.c1 + v * frac,
+                            line.pen,
+                        ));
                     }
 
                     last = frac;
@@ -112,7 +116,11 @@ impl Scene {
             }
 
             if draw {
-                new_segments.push(LineSegment::new(line.c1 + v * last, line.c2));
+                new_segments.push(LineSegment::new_with_pen(
+                    line.c1 + v * last,
+                    line.c2,
+                    line.pen,
+                ));
             }
         }
 
