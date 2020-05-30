@@ -1,12 +1,12 @@
 use crate::geom::line_segment::LineSegment;
-use crate::geom::types::Point2f;
+use crate::types::Point;
 use crate::plot::Plot;
 use rstar::{PointDistance, RTree, RTreeObject, AABB};
 
 #[derive(PartialEq, Clone)]
 struct TreeElement {
-    start: Point2f,
-    end: Point2f,
+    start: Point,
+    end: Point,
 }
 
 impl TreeElement {
@@ -28,7 +28,7 @@ impl RTreeObject for TreeElement {
 
 impl PointDistance for TreeElement {
     fn distance_2(&self, point: &[f64; 2]) -> f64 {
-        (self.start - Point2f::from(*point)).norm()
+        (self.start - Point::from(*point)).norm()
     }
 }
 

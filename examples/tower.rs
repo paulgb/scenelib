@@ -27,8 +27,8 @@ impl NoiseMaker {
         ((x as f64 * self.x_seed + y as f64 * self.y_seed) * 1e10 + self.seed).sin()
     }
 
-    fn random_unit(&self, x: usize, y: usize) -> Vec2f {
-        Vec2f::from_angle(PI * 2. * self.random(x, y))
+    fn random_unit(&self, x: usize, y: usize) -> Vector {
+        Vector::from_angle(PI * 2. * self.random(x, y))
     }
 
     fn smooth_step(v1: f64, v2: f64, w: f64) -> f64 {
@@ -43,10 +43,10 @@ impl NoiseMaker {
         let yi = y.floor();
         let yf = y - yi;
 
-        let v00 = Vec2f::new(xf, yf);
-        let v01 = Vec2f::new(xf - 1., yf);
-        let v10 = Vec2f::new(xf, yf - 1.);
-        let v11 = Vec2f::new(xf - 1., yf - 1.);
+        let v00 = vec(xf, yf);
+        let v01 = vec(xf - 1., yf);
+        let v10 = vec(xf, yf - 1.);
+        let v11 = vec(xf - 1., yf - 1.);
 
         let n00 = v00.dot(&self.random_unit(xi as usize, yi as usize));
         let n01 = v01.dot(&self.random_unit(xi as usize, yi as usize + 1));
@@ -68,14 +68,14 @@ fn main() {
     let divisions = control_points * resolution;
 
     let noise_maker = NoiseMaker::new(control_points, 36., 74., 0.85);
-    let origin = Point2f::new(0., 0.);
+    let origin = pt(0., 0.);
 
     for y in 1..200 {
         let poly = Polygon::new(
             (0..divisions)
                 .map(|i| {
                     let r = noise_maker.noise(i as f64 / resolution as f64, y as f64);
-                    origin + (r + 10.) * Vec2f::from_angle((i as f64 / divisions as f64) * 2. * PI)
+                    origin + (r + 10.) * Vector::from_angle((i as f64 / divisions as f64) * 2. * PI)
                 })
                 .collect(),
         );
@@ -94,8 +94,8 @@ fn main() {
         .to_2d_scene();
     
     scene.fill_poly(&rect(
-        Point2f::new(-1.8419205274868402, -3.551914307735975),
-        Vec2f::new(6.739078913297737, 2.4)
+        pt(-1.8419205274868402, -3.551914307735975),
+        vec(6.739078913297737, 2.4)
     ));
 
     let mut plot = scene

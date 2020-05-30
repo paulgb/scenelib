@@ -1,23 +1,23 @@
 pub mod cost;
 
 use crate::geom::line_segment::LineSegment;
-use crate::geom::types::Point2f;
+use crate::types::Point;
 use crate::plot::cost::PlotCost;
 
 pub struct Plot {
     pub lines: Vec<LineSegment>,
-    pub lower_bound: Point2f,
-    pub upper_bound: Point2f,
-    pub origin: Point2f,
+    pub lower_bound: Point,
+    pub upper_bound: Point,
+    pub origin: Point,
 }
 
 impl Plot {
-    pub fn new(lines: Vec<LineSegment>, lower_bound: Point2f, upper_bound: Point2f) -> Plot {
+    pub fn new(lines: Vec<LineSegment>, lower_bound: Point, upper_bound: Point) -> Plot {
         Plot {
             lines,
             lower_bound,
             upper_bound,
-            origin: Point2f::new(0., 0.)
+            origin: Point::new(0., 0.)
         }
     }
 

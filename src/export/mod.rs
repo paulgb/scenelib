@@ -1,4 +1,4 @@
-use crate::geom::types::Point2f;
+use crate::types::Point;
 use crate::plot::Plot;
 use svg::node::element::path::Data;
 use svg::node::element::Path;
@@ -25,7 +25,7 @@ impl WriteSVG for Plot {
             format!("{} {} {} {}", lower_bound.x - margin, lower_bound.y - margin, w + margin * 2., h + margin * 2.),
         );
         let mut path_data = Data::new();
-        let mut last: Point2f = Point2f::new(0., 0.);
+        let mut last: Point = Point::new(0., 0.);
 
         for line in &self.lines {
             if last != line.c1 {
