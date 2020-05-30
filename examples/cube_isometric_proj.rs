@@ -11,8 +11,8 @@ fn main() {
             let height = (i as f64 / 10. * PI).sin() + (j as f64 / 10. * PI).cos() + 2.;
 
             let mut cube = cube()
-                .scale3(100., 100., 10.)
-                .translate(x, y, 100. * height);
+                .scale3(vec3(100., 100., 10.))
+                .translate(vec3(x, y, 100. * height));
 
             scene3d.append(&mut cube.polys);
         }
@@ -21,7 +21,7 @@ fn main() {
     let scene = scene3d
         .apply(&isometric_projection())
         .scale(1. / 15.)
-        .translate(0., 0., 1000.)
+        .translate(vec3(0., 0., 1000.))
         .apply(&m)
         .to_2d_scene();
 

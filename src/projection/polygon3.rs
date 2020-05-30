@@ -1,12 +1,12 @@
 use crate::geom::polygon::Polygon;
-use crate::geom::types::Point3f;
+use crate::projection::types3::Point3;
 use crate::projection::apply::Apply;
 use crate::projection::transform::Transform;
 use crate::types::Point;
 
 #[derive(Clone)]
 pub struct Polygon3 {
-    pub points: Vec<Point3f>,
+    pub points: Vec<Point3>,
 }
 
 impl Polygon3 {
@@ -25,16 +25,16 @@ impl Polygon3 {
 }
 
 impl Polygon3 {
-    pub fn new(points: Vec<Point3f>) -> Polygon3 {
+    pub fn new(points: Vec<Point3>) -> Polygon3 {
         Polygon3 { points }
     }
 
     pub fn from_poly(poly: &Polygon) -> Polygon3 {
-        let points: Vec<Point3f> = poly
+        let points: Vec<Point3> = poly
             .points
             .0
             .iter()
-            .map(|p: &Point| Point3f::new(p.x, p.y, 0.0))
+            .map(|p: &Point| Point3::new(p.x, p.y, 0.0))
             .collect();
         Polygon3 { points }
     }

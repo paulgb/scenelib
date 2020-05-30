@@ -3,7 +3,7 @@ use scenelib::prelude::*;
 
 fn main() {
     let mut scene3d: Scene3 = Scene3::new();
-    let mut cube = cube().scale3(100., 100., 10.).translate(0., 0., 0.);
+    let mut cube = cube().scale3(vec3(100., 100., 10.));
 
     scene3d.append(&mut cube.polys);
 
@@ -11,7 +11,7 @@ fn main() {
     scene3d = scene3d
         .apply(&isometric_projection())
         .scale(1. / 15.)
-        .translate(0., 0., 1000.)
+        .translate(vec3(0., 0., 1000.))
         .apply(&m);
 
     let scene = scene3d.to_2d_scene();

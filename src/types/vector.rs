@@ -8,11 +8,7 @@ pub trait VectorContainer {
 
 pub trait VectorActions {}
 
-impl<T> VectorActions for T where T: VectorContainer {
-    fn scale2(self: T, amount: Vector) -> Self {
-        self.apply(&|x| Vector::new(x.x * amount.x, x.y * amount.y))
-    }
-}
+impl<T> VectorActions for T where T: VectorContainer {}
 
 pub type Vector = Vector2<f64>;
 

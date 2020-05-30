@@ -81,7 +81,7 @@ fn main() {
         );
 
         let mut p3 = Polygon3::from_poly(&poly);
-        p3 = p3.scale(100.).translate(0., 0., 20. * y as f64);
+        p3 = p3.scale(100.).translate(vec3(0., 0., 20. * y as f64));
         scene3d.push(p3);
     }
 
@@ -89,7 +89,7 @@ fn main() {
 
     let scene = scene3d
         .apply(&isometric_projection())
-        .translate(0., -2000., 3500.)
+        .translate(vec3(0., -2000., 3500.))
         .apply(&m)
         .to_2d_scene();
 

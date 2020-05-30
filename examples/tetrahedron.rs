@@ -16,7 +16,7 @@ fn main() {
                     0.,
                 ))
                 // Translate.
-                .apply(&Translation3::from(Vec3f::new(
+                .apply(&Translation3::from(vec3(
                     60. * i as f64,
                     60. * j as f64,
                     0.,

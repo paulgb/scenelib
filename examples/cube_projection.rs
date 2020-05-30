@@ -8,7 +8,7 @@ fn main() {
         for j in 1..4 {
             let mut cube = cube()
                 .scale(50.)
-                .translate(i as f64 * 70., j as f64 * 70., 0.);
+                .translate(vec3(i as f64 * 70., j as f64 * 70., 0.));
             scene3d.append(&mut cube.polys);
         }
     }
@@ -17,7 +17,7 @@ fn main() {
 
     let scene = scene3d
         .apply(&isometric_projection())
-        .translate(0., 0., 1000.)
+        .translate(vec3(0., 0., 1000.))
         .apply(&m)
         .to_2d_scene();
 

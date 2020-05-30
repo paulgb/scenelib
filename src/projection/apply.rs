@@ -1,6 +1,6 @@
-use crate::geom::types::Vec3f;
+use crate::projection::types3::Vector3;
 use crate::projection::transform::Transform;
-use nalgebra::Translation3;
+use nalgebra::{Translation3, Rotation3};
 
 pub trait Apply {
     fn apply(self, transform: &dyn Transform) -> Self;
@@ -8,8 +8,9 @@ pub trait Apply {
 
 pub trait ApplyOps {
     fn scale(self, scale: f64) -> Self;
-    fn scale3(self, x: f64, y: f64, z: f64) -> Self;
-    fn translate(self, x: f64, y: f64, z: f64) -> Self;
+    fn scale3(self, v: Vector3) -> Self;
+    fn translate(self, v: Vector3) -> Self;
+    fn rotate_euler(self, roll: f64, pitch: f64, yaw: f64) -> Self;
 }
 
 impl<T> ApplyOps for T
@@ -20,11 +21,16 @@ where
         self.apply(&scale)
     }
 
-    fn scale3(self, x: f64, y: f64, z: f64) -> Self {
-        self.apply(&Vec3f::new(x, y, z))
+    fn scale3(self, v: Vector3) -> Self {
+        self.apply(&v)
     }
 
-    fn translate(self, x: f64, y: f64, z: f64) -> Self {
-        self.apply(&Translation3::new(x, y, z))
+    fn translate(self, v: Vector3) -> Self {
+        self.apply(&Translation3::new(v.x, v.y, v.z))
+    }
+
+    fn rotate_euler(self, roll: f64, pitch: f64, yaw: f64) -> Self {
+        let transform = Rotation3::from_euler_angles(roll, pitch, yaw);
+        self.apply(&transform)
     }
 }

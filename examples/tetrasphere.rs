@@ -1,4 +1,3 @@
-use nalgebra::{Rotation3, Translation3};
 use scenelib::prelude::*;
 
 fn main() {
@@ -18,11 +17,11 @@ fn main() {
 
             let mut tet = tetrahedron()
                 // Scale.
-                .apply(&SCALE)
+                .scale(SCALE)
                 // Translate.
-                .apply(&Translation3::from(Vec3f::new(RADIUS, 0., 0.)))
+                .translate(vec3(RADIUS, 0., 0.))
                 // Rotate.
-                .apply(&Rotation3::from_euler_angles(0., lon, lat));
+                .rotate_euler(0., lon, lat);
 
             scene3d.append(&mut tet.polys);
         }
