@@ -1,6 +1,6 @@
-use crate::projection::types3::Vector3;
 use crate::projection::transform::Transform;
-use nalgebra::{Translation3, Rotation3};
+use crate::projection::types3::Vector3;
+use nalgebra::{Rotation3, Translation3};
 
 pub trait Apply {
     fn apply(self, transform: &dyn Transform) -> Self;

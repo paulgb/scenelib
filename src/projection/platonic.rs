@@ -1,6 +1,6 @@
-use crate::projection::types3::Point3;
 use crate::projection::form::Form;
 use crate::projection::polygon3::Polygon3;
+use crate::projection::types3::Point3;
 
 pub fn tetrahedron() -> Form {
     let p1 = Point3::new((8. / 9. as f64).sqrt(), 0., -1. / 3.);

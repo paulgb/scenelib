@@ -1,7 +1,7 @@
 use crate::geom::polygon::Polygon;
-use crate::projection::types3::Point3;
 use crate::projection::apply::Apply;
 use crate::projection::transform::Transform;
+use crate::projection::types3::Point3;
 use crate::types::Point;
 
 #[derive(Clone)]
