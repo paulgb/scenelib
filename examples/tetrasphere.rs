@@ -16,11 +16,8 @@ fn main() {
             let lon = (i as f64 / LON_STEPS as f64) * PI * 2.;
 
             let mut tet = tetrahedron()
-                // Scale.
                 .scale(SCALE)
-                // Translate.
                 .translate(vec3(RADIUS, 0., 0.))
-                // Rotate.
                 .rotate_euler(0., lon, lat);
 
             scene3d.append(&mut tet.polys);

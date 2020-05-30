@@ -10,9 +10,7 @@ fn main() {
             let height = (i as f64 / 10. * PI).sin() + (j as f64 / 10. * PI).cos() + 2.;
 
             let mut cube = cube()
-                // Scale.
                 .scale3(vec3(100., 100., 10.))
-                // Translate.
                 .translate(vec3(x, y, 100. * height));
 
             scene3d.append(&mut cube.polys);
