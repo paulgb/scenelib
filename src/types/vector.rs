@@ -1,6 +1,6 @@
 use crate::types::point::Point;
-use na::{Vector2, Vector3};
 use crate::types::to_string::ToString;
+use na::{Vector2, Vector3};
 
 pub trait VectorContainer {
     fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self;
@@ -37,4 +37,4 @@ pub type Vec3f = Vector3<f64>;
 
 pub fn vec(x: f64, y: f64) -> Vector {
     Vector::new(x, y)
-} 
+}

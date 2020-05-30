@@ -6,11 +6,9 @@ fn main() {
 
     for i in 1..4 {
         for j in 1..4 {
-            let mut cube = cube().scale(50.).translate(
-                i as f64 * 70.,
-                j as f64 * 70.,
-                0.,
-            );
+            let mut cube = cube()
+                .scale(50.)
+                .translate(i as f64 * 70., j as f64 * 70., 0.);
             scene3d.append(&mut cube.polys);
         }
     }
@@ -22,6 +20,6 @@ fn main() {
         .translate(0., 0., 1000.)
         .apply(&m)
         .to_2d_scene();
-        
+
     scene.to_plot().write_svg("cube_projection.svg");
 }

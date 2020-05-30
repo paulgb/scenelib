@@ -1,8 +1,8 @@
 pub mod cost;
 
 use crate::geom::line_segment::LineSegment;
-use crate::types::Point;
 use crate::plot::cost::PlotCost;
+use crate::types::Point;
 
 pub struct Plot {
     pub lines: Vec<LineSegment>,
@@ -17,7 +17,7 @@ impl Plot {
             lines,
             lower_bound,
             upper_bound,
-            origin: Point::new(0., 0.)
+            origin: Point::new(0., 0.),
         }
     }
 
@@ -45,7 +45,7 @@ impl Plot {
             move_cost,
             line_cost,
             segments,
-            moves
+            moves,
         }
     }
 }

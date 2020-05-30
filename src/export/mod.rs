@@ -1,5 +1,5 @@
-use crate::types::Point;
 use crate::plot::Plot;
+use crate::types::Point;
 use svg::node::element::path::Data;
 use svg::node::element::Path;
 use svg::Document;
@@ -22,7 +22,13 @@ impl WriteSVG for Plot {
 
         let mut doc = Document::new().set(
             "viewBox",
-            format!("{} {} {} {}", lower_bound.x - margin, lower_bound.y - margin, w + margin * 2., h + margin * 2.),
+            format!(
+                "{} {} {} {}",
+                lower_bound.x - margin,
+                lower_bound.y - margin,
+                w + margin * 2.,
+                h + margin * 2.
+            ),
         );
         let mut path_data = Data::new();
         let mut last: Point = Point::new(0., 0.);

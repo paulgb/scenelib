@@ -1,6 +1,6 @@
+use crate::types::to_string::ToString;
 use crate::types::vector::Vector;
 use na::{Point2, Point3};
-use crate::types::to_string::ToString;
 
 pub trait PointContainer {
     fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self;
@@ -32,10 +32,7 @@ where
     fn rotate(self: T, radians: f64) -> Self {
         let cosr = radians.cos();
         let sinr = radians.sin();
-        self.apply(&|p| Point::new(
-                p.x * cosr - p.y * sinr,
-                p.x * sinr + p.y * cosr,
-        ))
+        self.apply(&|p| Point::new(p.x * cosr - p.y * sinr, p.x * sinr + p.y * cosr))
     }
 
     fn translate(self: T, amount: Vector) -> Self {
@@ -57,4 +54,4 @@ impl ToString for Point {
 
 pub fn pt(x: f64, y: f64) -> Point {
     Point::new(x, y)
-} 
+}

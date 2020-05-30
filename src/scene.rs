@@ -1,8 +1,8 @@
 use crate::geom::line_segment::LineSegment;
 use crate::geom::polygon::Polygon;
-use rstar::{RTree, RTreeObject, AABB};
 use crate::plot::Plot;
 use crate::types::Point;
+use rstar::{RTree, RTreeObject, AABB};
 pub struct Scene {
     lines: RTree<LineSegment>,
 }
@@ -143,24 +143,13 @@ mod tests {
         let line = LineSegment::new(pt(0., 0.), pt(10., 0.));
         sc.add_segment(line);
 
-        let poly = Polygon::new(vec![
-            pt(10., 5.),
-            pt(5., 0.),
-            pt(10., -5.),
-            pt(15., 0.),
-        ]);
+        let poly = Polygon::new(vec![pt(10., 5.), pt(5., 0.), pt(10., -5.), pt(15., 0.)]);
 
         sc.fill_poly(&poly);
 
         let result: Vec<&LineSegment> = sc.lines.iter().collect();
 
-        assert_eq!(
-            vec![&LineSegment::new(
-                pt(0., 0.),
-                pt(5., 0.)
-            )],
-            result
-        );
+        assert_eq!(vec![&LineSegment::new(pt(0., 0.), pt(5., 0.))], result);
     }
 
     #[test]
@@ -170,12 +159,7 @@ mod tests {
         let line = LineSegment::new(pt(0., 0.), pt(10., 0.));
         sc.add_segment(line);
 
-        let poly = Polygon::new(vec![
-            pt(8., 0.),
-            pt(7., 1.),
-            pt(8., 2.),
-            pt(9., 1.),
-        ]);
+        let poly = Polygon::new(vec![pt(8., 0.), pt(7., 1.), pt(8., 2.), pt(9., 1.)]);
 
         sc.fill_poly(&poly);
 
@@ -210,11 +194,7 @@ mod tests {
         let expected_split1 = LineSegment::new(pt(0., 3.), pt(2., 3.));
         let expected_split2 = LineSegment::new(pt(4., 3.), pt(10., 3.));
 
-        let poly = Polygon::new(vec![
-            pt(3., 1.),
-            pt(6., 7.),
-            pt(0., 7.),
-        ]);
+        let poly = Polygon::new(vec![pt(3., 1.), pt(6., 7.), pt(0., 7.)]);
         sc.fill_poly(&poly);
         let mut result: Vec<&LineSegment> = sc.lines.iter().collect();
         result.sort();
@@ -238,29 +218,14 @@ mod tests {
         sc.add_segment(line1);
 
         let poly = Polygon::with_holes(
-            vec![
-                pt(0., 0.),
-                pt(0., 15.),
-                pt(15., 15.),
-                pt(15., 0.),
-            ],
-            vec![vec![
-                pt(10., 5.),
-                pt(10., 10.),
-                pt(5., 10.),
-                pt(5., 5.),
-                ]],
+            vec![pt(0., 0.), pt(0., 15.), pt(15., 15.), pt(15., 0.)],
+            vec![vec![pt(10., 5.), pt(10., 10.), pt(5., 10.), pt(5., 5.)]],
         );
         sc.fill_poly(&poly);
 
         let result: Vec<&LineSegment> = sc.lines.iter().collect();
 
-        let expected = LineSegment::new(
-            pt(5., 7.),
-            pt(10., 7.)
-        );
-        assert_eq!(vec![
-            &expected
-        ], result)
+        let expected = LineSegment::new(pt(5., 7.), pt(10., 7.));
+        assert_eq!(vec![&expected], result)
     }
 }

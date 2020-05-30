@@ -8,10 +8,7 @@ fn main() {
 
     for i in 0..100 {
         let y = i as f64 * 3. - 200.;
-        scene.add_segment(LineSegment::new(
-            pt(-300., y),
-            pt(300., y + 20.),
-        ))
+        scene.add_segment(LineSegment::new(pt(-300., y), pt(300., y + 20.)))
     }
 
     let mut sp1: Vec<Point> = Vec::new();

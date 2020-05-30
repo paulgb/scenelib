@@ -1,6 +1,6 @@
 use crate::geom::line_segment::LineSegment;
-use crate::types::Point;
 use crate::plot::Plot;
+use crate::types::Point;
 use rstar::{PointDistance, RTree, RTreeObject, AABB};
 
 #[derive(PartialEq, Clone)]

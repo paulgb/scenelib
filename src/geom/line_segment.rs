@@ -1,4 +1,4 @@
-use crate::types::{Point, Vector, VectorExtension, PointActions, PointContainer};
+use crate::types::{Point, PointActions, PointContainer, Vector, VectorExtension};
 use rstar::{RTreeObject, AABB};
 
 // A very small number to be used in calculations to avoid some
@@ -19,7 +19,7 @@ impl PointContainer for LineSegment {
             c2: self.c2.apply(lambda),
         }
     }
-} 
+}
 
 impl std::fmt::Debug for LineSegment {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -170,7 +170,7 @@ impl LineSegment {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{vec, pt};
+    use crate::types::{pt, vec};
 
     #[test]
     fn test_intersect_vertical() {
@@ -184,14 +184,8 @@ mod tests {
         );
 
         // The other line segment never intersects the current line.
-        assert_eq!(
-            None,
-            l1.intersect_segment(&l2.translate(vec(0., 10.)))
-        );
-        assert_eq!(
-            None,
-            l1.intersect_segment(&l2.translate(vec(10., 10.)))
-        );
+        assert_eq!(None, l1.intersect_segment(&l2.translate(vec(0., 10.))));
+        assert_eq!(None, l1.intersect_segment(&l2.translate(vec(10., 10.))));
     }
 
     #[test]
@@ -219,10 +213,7 @@ mod tests {
             l1.intersect_segment(&l2.translate(vec(-10.0, -5.0)))
         );
 
-        assert_eq!(
-            None,
-            l1.intersect_segment(&l2.translate(vec(-20.0, -5.0)))
-        );
+        assert_eq!(None, l1.intersect_segment(&l2.translate(vec(-20.0, -5.0))));
     }
 
     #[test]

@@ -1,5 +1,5 @@
-use nalgebra::{Rotation3, Translation3, Perspective3};
 use crate::geom::types::{Point3f, Vec3f};
+use nalgebra::{Perspective3, Rotation3, Translation3};
 
 pub trait Transform {
     fn transform_point(&self, point: Point3f) -> Point3f;
