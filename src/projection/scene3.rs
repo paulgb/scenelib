@@ -1,9 +1,9 @@
 use crate::geom::polygon::Polygon;
 use crate::projection::apply::Apply;
+use crate::projection::form::Form;
 use crate::projection::polygon3::Polygon3;
 use crate::projection::transform::Transform;
 use crate::scene::Scene;
-use crate::projection::form::Form;
 
 pub struct Scene3 {
     pub polys: Vec<Polygon3>,

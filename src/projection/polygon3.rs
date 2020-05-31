@@ -20,9 +20,17 @@ impl Polygon3 {
     pub fn to_2d(&self, perspective: f64) -> Polygon {
         // This drops the z component from each point, but also inverts the y axis because SVG screen
         // coordinates increase going down.
-        Polygon::new(self.points.iter().map(
-            |d| Point::new(d.x * (1. + d.z * perspective), -d.y * (1. + d.z * perspective)))
-            .collect())
+        Polygon::new(
+            self.points
+                .iter()
+                .map(|d| {
+                    Point::new(
+                        d.x * (1. + d.z * perspective),
+                        -d.y * (1. + d.z * perspective),
+                    )
+                })
+                .collect(),
+        )
     }
 }
 
