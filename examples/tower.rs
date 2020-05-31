@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate scenelib;
 use nalgebra::Perspective3;
 use scenelib::prelude::*;
 
@@ -98,5 +100,5 @@ fn main() {
     println!("Before: {:?}", plot.cost());
     plot = plot.optimize();
     println!("After: {:?}", plot.cost());
-    plot.write_svg("tower.svg");
+    plot.write_svg(&svg_filename!());
 }

@@ -3,7 +3,7 @@ use crate::geom::polygon::Polygon;
 use crate::plot::{Layer, Plot};
 use crate::types::Point;
 use rstar::{RTree, RTreeObject, AABB};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 pub struct Scene {
     lines: RTree<LineSegment>,
 }
@@ -20,7 +20,7 @@ impl Scene {
         let lower_bound: Point = Point::from(bounds.lower());
         let upper_bound: Point = Point::from(bounds.upper());
 
-        let mut layers_map: HashMap<usize, Layer> = HashMap::new();
+        let mut layers_map: BTreeMap<usize, Layer> = BTreeMap::new();
 
         for line in &self.lines {
             let entry = layers_map

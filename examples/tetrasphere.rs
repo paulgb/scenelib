@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate scenelib;
 use scenelib::prelude::*;
 
 fn main() {
@@ -29,5 +31,5 @@ fn main() {
     println!("Before: {:?}", plot.cost());
     plot = plot.optimize();
     println!("After: {:?}", plot.cost());
-    plot.write_svg("tetrasphere.svg");
+    plot.write_svg(&svg_filename!());
 }

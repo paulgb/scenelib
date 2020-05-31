@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate scenelib;
 use scenelib::prelude::*;
 
 fn main() {
@@ -28,5 +30,5 @@ fn main() {
     sp1.append(&mut sp2);
     scene.add_poly(&Polygon::new(sp1));
 
-    scene.to_plot().write_svg("spiral.svg");
+    scene.to_plot().write_svg(&svg_filename!());
 }

@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate scenelib;
 use scenelib::prelude::*;
 
 fn main() {
@@ -16,5 +18,5 @@ fn main() {
     );
     scene.add_poly(&poly);
 
-    scene.to_plot().write_svg("polygon_hole.svg");
+    scene.to_plot().write_svg(&svg_filename!());
 }

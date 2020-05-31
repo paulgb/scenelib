@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate scenelib;
 use scenelib::prelude::*;
 
 fn main() {
@@ -16,5 +18,5 @@ fn main() {
         scene.add_poly(&s2);
     }
 
-    scene.to_plot().write_svg("basic_shapes.svg");
+    scene.to_plot().write_svg(&svg_filename!());
 }

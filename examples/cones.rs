@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate scenelib;
 use scenelib::prelude::*;
 
 fn draw_cone(scene: &mut Scene, place: Vector, scale: f64) {
@@ -25,5 +27,5 @@ fn main() {
         }
     }
 
-    scene.to_plot().write_svg("cones.svg");
+    scene.to_plot().write_svg(&svg_filename!());
 }

@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate scenelib;
 use scenelib::prelude::*;
 
 fn main() {
@@ -21,5 +23,5 @@ fn main() {
 
     scene
         .to_plot()
-        .write_svg("repro_new_missing_line_from_polys.svg");
+        .write_svg(&svg_filename!());
 }

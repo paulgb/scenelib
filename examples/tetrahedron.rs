@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate scenelib;
 use nalgebra::{Rotation3, Translation3};
 use scenelib::prelude::*;
 
@@ -24,5 +26,5 @@ fn main() {
     }
 
     let scene = scene3d.apply(&isometric_projection()).to_2d_scene();
-    scene.to_plot().write_svg("tetrahedron.svg");
+    scene.to_plot().write_svg(&svg_filename!());
 }

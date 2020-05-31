@@ -8,4 +8,7 @@ pub mod scene;
 pub mod shape;
 pub mod types;
 
+#[macro_use]
+pub mod util;
+
 extern crate nalgebra as na;
