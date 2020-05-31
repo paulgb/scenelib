@@ -25,7 +25,7 @@ impl Scene3 {
         self.polys.append(polys)
     }
 
-    pub fn project(&self) -> Vec<Polygon> {
+    pub fn project(&self, perspective: f64) -> Vec<Polygon> {
         let mut v: Vec<(f64, Polygon)> = self
             .polys
             .iter()
@@ -39,7 +39,7 @@ impl Scene3 {
                     c += 1;
                 }
 
-                (s / c as f64, d.to_2d())
+                (s / c as f64, d.to_2d(perspective))
             })
             .collect();
 
@@ -49,8 +49,12 @@ impl Scene3 {
     }
 
     pub fn to_2d_scene(&self) -> Scene {
+        self.to_2d_scene_with_perspective(0.0)
+    }
+
+    pub fn to_2d_scene_with_perspective(&self, perspective: f64) -> Scene {
         let mut s = Scene::new();
-        for poly in self.project() {
+        for poly in self.project(perspective) {
             s.add_poly(&poly)
         }
 
