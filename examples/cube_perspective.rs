@@ -5,12 +5,16 @@ use scenelib::prelude::*;
 fn main() {
     let mut scene3d = Scene3::new();
 
-    let cube = cube().scale(50.).translate(vec3(10., 0., 0.));
-    scene3d.add_form(cube);
+    for i in 0..10 {
+        for j in 0..10 {
+            let cube = cube().scale(5.).translate(vec3(10.1 * i as f64, 10.1 * j as f64, 0.));
+            scene3d.add_form(cube);        
+        }
+    }
 
     scene3d
         .apply(&isometric_projection())
-        .to_2d_scene_with_perspective(0.01)
+        .to_2d_scene_with_perspective(1.01)
         .to_plot()
         .write_svg(&svg_filename!());
 }

@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate scenelib;
-use nalgebra::Perspective3;
 use scenelib::prelude::*;
 
 struct NoiseMaker {
@@ -87,13 +86,9 @@ fn main() {
         scene3d.add_poly(p3);
     }
 
-    let m: Perspective3<f64> = Perspective3::new(1., 3.14 / 8.0, 100.0, 1000.0);
-
     let scene = scene3d
         .apply(&isometric_projection())
-        .translate(vec3(0., -2000., 3500.))
-        .apply(&m)
-        .to_2d_scene();
+        .to_2d_scene_with_perspective(1.00013);
 
     let mut plot = scene.to_plot();
 

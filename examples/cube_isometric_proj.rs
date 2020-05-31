@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate scenelib;
-use nalgebra::Perspective3;
 use scenelib::prelude::*;
 
 fn main() {
@@ -19,13 +18,10 @@ fn main() {
             scene3d.add_form(cube);
         }
     }
-    let m: Perspective3<f64> = Perspective3::new(1., 3.14 / 8.0, 100.0, 1000.0);
     let scene = scene3d
         .apply(&isometric_projection())
         .scale(1. / 15.)
-        .translate(vec3(0., 0., 1000.))
-        .apply(&m)
-        .to_2d_scene();
+        .to_2d_scene_with_perspective(1.003);
 
     scene.to_plot().write_svg(&svg_filename!());
 }

@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate scenelib;
-use nalgebra::{Rotation3, Translation3};
 use scenelib::prelude::*;
 
 fn main() {
@@ -9,17 +8,17 @@ fn main() {
     for i in 0..50 {
         for j in 0..50 {
             let tet = tetrahedron()
-                .apply(&30.)
-                .apply(&Rotation3::from_euler_angles(
+                .scale(30.)
+                .rotate_euler(
                     i as f64 * PI / 40.,
                     j as f64 * PI / 30.,
                     0.,
-                ))
-                .apply(&Translation3::from(vec3(
+                )
+                .translate(vec3(
                     60. * i as f64,
                     60. * j as f64,
                     0.,
-                )));
+                ));
 
             scene3d.add_form(tet);
         }
