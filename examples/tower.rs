@@ -84,7 +84,7 @@ fn main() {
 
         let mut p3 = Polygon3::from_poly(&poly);
         p3 = p3.scale(100.).translate(vec3(0., 0., 20. * y as f64));
-        scene3d.push(p3);
+        scene3d.add_poly(p3);
     }
 
     let m: Perspective3<f64> = Perspective3::new(1., 3.14 / 8.0, 100.0, 1000.0);

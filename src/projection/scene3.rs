@@ -3,6 +3,7 @@ use crate::projection::apply::Apply;
 use crate::projection::polygon3::Polygon3;
 use crate::projection::transform::Transform;
 use crate::scene::Scene;
+use crate::projection::form::Form;
 
 pub struct Scene3 {
     pub polys: Vec<Polygon3>,
@@ -17,12 +18,12 @@ impl Scene3 {
         Scene3 { polys: Vec::new() }
     }
 
-    pub fn push(&mut self, poly: Polygon3) {
+    pub fn add_poly(&mut self, poly: Polygon3) {
         self.polys.push(poly)
     }
 
-    pub fn append(&mut self, polys: &mut Vec<Polygon3>) {
-        self.polys.append(polys)
+    pub fn add_form(&mut self, mut form: Form) {
+        self.polys.append(&mut form.polys)
     }
 
     pub fn project(&self, perspective: f64) -> Vec<Polygon> {

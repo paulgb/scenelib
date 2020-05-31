@@ -8,7 +8,7 @@ fn main() {
 
     for i in 0..50 {
         for j in 0..50 {
-            let mut tet = tetrahedron()
+            let tet = tetrahedron()
                 .apply(&30.)
                 .apply(&Rotation3::from_euler_angles(
                     i as f64 * PI / 40.,
@@ -21,7 +21,7 @@ fn main() {
                     0.,
                 )));
 
-            scene3d.append(&mut tet.polys);
+            scene3d.add_form(tet);
         }
     }
 

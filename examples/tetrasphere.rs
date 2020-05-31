@@ -17,12 +17,12 @@ fn main() {
             let lat = LAT_MIN + (j as f64 / LAT_STEPS as f64) * (LAT_MAX - LAT_MIN);
             let lon = (i as f64 / LON_STEPS as f64) * PI * 2.;
 
-            let mut tet = tetrahedron()
+            let tet = tetrahedron()
                 .scale(SCALE)
                 .translate(vec3(RADIUS, 0., 0.))
                 .rotate_euler(0., lon, lat);
 
-            scene3d.append(&mut tet.polys);
+            scene3d.add_form(tet);
         }
     }
 

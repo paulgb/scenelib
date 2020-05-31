@@ -8,10 +8,10 @@ fn main() {
 
     for i in 1..3 {
         for j in 1..3 {
-            let mut cube = cube()
+            let cube = cube()
                 .scale(50.)
                 .translate(vec3(i as f64 * 55., j as f64 * 55., 0.));
-            scene3d.append(&mut cube.polys);
+            scene3d.add_form(cube);
         }
     }
 

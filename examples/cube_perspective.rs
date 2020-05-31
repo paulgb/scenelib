@@ -5,8 +5,8 @@ use scenelib::prelude::*;
 fn main() {
     let mut scene3d = Scene3::new();
 
-    let mut cube = cube().scale(50.).translate(vec3(10., 0., 0.));
-    scene3d.append(&mut cube.polys);
+    let cube = cube().scale(50.).translate(vec3(10., 0., 0.));
+    scene3d.add_form(cube);
 
     scene3d
         .apply(&isometric_projection())
