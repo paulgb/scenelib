@@ -21,5 +21,5 @@ fn main() {
         scene.add_poly(&poly);
     }
 
-    scene.to_plot().write_svg(&svg_filename!());
+    scene.to_svg().save(&svg_filename!());
 }

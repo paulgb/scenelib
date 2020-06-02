@@ -16,7 +16,7 @@ fn main() {
 
     scene3d
         .perspective(1.01)
-        .to_2d_scene()
-        .to_plot()
-        .write_svg(&svg_filename!());
+        .to_2d()
+        .to_svg()
+        .save(&svg_filename!());
 }

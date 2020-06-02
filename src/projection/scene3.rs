@@ -1,3 +1,4 @@
+use crate::draw_mode::DrawMode;
 use crate::geom::polygon::Polygon;
 use crate::projection::apply::Apply;
 use crate::projection::form::Form;
@@ -8,7 +9,7 @@ use crate::scene::Scene;
 use na::Rotation3;
 
 pub struct Scene3 {
-    pub polys: Vec<Polygon3>,
+    pub polys: Vec<(Polygon3, DrawMode)>,
     pub perspective: f64,
     pub projection: Rotation3<f64>,
 }
@@ -32,15 +33,17 @@ impl Scene3 {
     }
 
     pub fn add_poly(&mut self, poly: Polygon3) {
-        self.polys.push(poly)
+        self.polys.push((poly, Default::default()));
     }
 
-    pub fn add_form(&mut self, mut form: Form) {
-        self.polys.append(&mut form.polys)
+    pub fn add_form(&mut self, form: Form) {
+        let draw_mode = form.draw_mode.clone();
+        self.polys
+            .append(&mut form.polys.into_iter().map(|d| (d, draw_mode.clone())).collect())
     }
 
-    fn project(&self) -> Vec<Polygon> {
-        let mut v: Vec<(f64, Polygon)> = self
+    fn project(&self) -> Vec<(Polygon, DrawMode)> {
+        let mut v: Vec<(f64, Polygon, DrawMode)> = self
             .polys
             .iter()
             .map(|d| {
@@ -48,28 +51,33 @@ impl Scene3 {
                 let mut c = 0;
 
                 // TODO: this is a hack.
-                for p in d.points.iter() {
+                for p in d.0.points.iter() {
                     s += p.z;
                     c += 1;
                 }
 
-                (s / c as f64, d.to_2d(self.perspective))
+                (s / c as f64, d.0.to_2d(self.perspective), d.1.clone())
             })
             .collect();
 
         v.sort_by(|x, y| dangerous_compare(&x.0, &y.0));
 
-        v.into_iter().map(|d| d.1).collect()
+        v.into_iter().map(|d| (d.1, d.2)).collect()
     }
 
-    pub fn to_2d_scene(self) -> Scene {
+    pub fn to_2d(self) -> Scene {
         let mut s = Scene::new();
 
         // TODO: this is hacky
         let proj = self.projection.clone();
 
-        for poly in self.apply(&proj).project() {
-            s.add_poly(&poly)
+        for (poly, draw_mode) in self.apply(&proj).project() {
+            if draw_mode.fill {
+                s.fill_poly(&poly)
+            }
+            if let Some(pen) = draw_mode.pen {
+                s.stroke_poly(&poly, pen)
+            }
         }
 
         s
@@ -78,7 +86,11 @@ impl Scene3 {
 
 impl Apply for Scene3 {
     fn apply(mut self, transform: &dyn Transform) -> Scene3 {
-        self.polys = self.polys.into_iter().map(|d| d.apply(transform)).collect();
+        self.polys = self
+            .polys
+            .into_iter()
+            .map(|(poly, draw_mode)| (poly.apply(transform), draw_mode))
+            .collect();
         self
     }
 }

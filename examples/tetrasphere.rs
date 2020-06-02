@@ -26,7 +26,5 @@ fn main() {
         }
     }
 
-    let scene = scene3d.to_2d_scene();
-    let plot = scene.to_plot();
-    plot.write_svg(&svg_filename!());
+    scene3d.to_2d().to_svg().save(&svg_filename!());
 }

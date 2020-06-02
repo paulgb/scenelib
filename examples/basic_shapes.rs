@@ -18,5 +18,5 @@ fn main() {
         scene.add_poly(&s2);
     }
 
-    scene.to_plot().write_svg(&svg_filename!());
+    scene.to_svg().save(&svg_filename!());
 }

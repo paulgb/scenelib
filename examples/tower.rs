@@ -86,8 +86,6 @@ fn main() {
         scene3d.add_poly(p3);
     }
 
-    let scene = scene3d.perspective(1.00013).to_2d_scene();
-
-    let plot = scene.to_plot();
-    plot.write_svg(&svg_filename!());
+    let scene = scene3d.perspective(1.00013).to_2d();
+    scene.to_svg().save(&svg_filename!());
 }

@@ -18,7 +18,7 @@ fn main() {
             scene3d.add_form(cube);
         }
     }
-    let scene = scene3d.scale(1. / 15.).perspective(1.003).to_2d_scene();
+    let scene = scene3d.scale(1. / 15.).perspective(1.003).to_2d();
 
-    scene.to_plot().write_svg(&svg_filename!());
+    scene.to_svg().save(&svg_filename!());
 }

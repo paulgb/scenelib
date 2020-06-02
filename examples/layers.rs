@@ -10,5 +10,5 @@ fn main() {
     scene.add_poly_with_pen(&s1, 1);
     scene.add_poly_with_pen(&s2, 2);
 
-    scene.to_plot().write_svg(&svg_filename!());
+    scene.to_svg().save(&svg_filename!());
 }
