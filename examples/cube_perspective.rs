@@ -7,8 +7,10 @@ fn main() {
 
     for i in 0..10 {
         for j in 0..10 {
-            let cube = cube().scale(5.).translate(vec3(10.1 * i as f64, 10.1 * j as f64, 0.));
-            scene3d.add_form(cube);        
+            let cube = cube()
+                .scale(5.)
+                .translate(vec3(10.1 * i as f64, 10.1 * j as f64, 0.));
+            scene3d.add_form(cube);
         }
     }
 

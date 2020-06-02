@@ -1,10 +1,10 @@
 use crate::geom::polygon::Polygon;
 use crate::projection::apply::Apply;
 use crate::projection::form::Form;
+use crate::projection::isometric::isometric_projection;
 use crate::projection::polygon3::Polygon3;
 use crate::projection::transform::Transform;
 use crate::scene::Scene;
-use crate::projection::isometric::isometric_projection;
 use na::Rotation3;
 
 pub struct Scene3 {
@@ -22,7 +22,7 @@ impl Scene3 {
         Scene3 {
             polys: Vec::new(),
             perspective: 1.0,
-            projection: isometric_projection()
+            projection: isometric_projection(),
         }
     }
 
@@ -67,7 +67,7 @@ impl Scene3 {
 
         // TODO: this is hacky
         let proj = self.projection.clone();
-        
+
         for poly in self.apply(&proj).project() {
             s.add_poly(&poly)
         }

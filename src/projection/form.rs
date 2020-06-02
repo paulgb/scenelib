@@ -13,12 +13,12 @@ impl Form {
 }
 
 impl Apply for Form {
-    fn apply(self, transformation: &dyn Transform) -> Form {
-        let polys = self
+    fn apply(mut self, transformation: &dyn Transform) -> Form {
+        self.polys = self
             .polys
             .into_iter()
             .map(|d| d.apply(transformation))
             .collect();
-        Form { polys }
+        self
     }
 }

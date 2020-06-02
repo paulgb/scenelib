@@ -25,10 +25,7 @@ impl Polygon3 {
                 .iter()
                 .map(|d| {
                     let denom = (1. - perspective) * d.z + 1.;
-                    Point::new(
-                        d.x * (1. / denom),
-                        -d.y * (1. / denom),
-                    )
+                    Point::new(d.x * (1. / denom), -d.y * (1. / denom))
                 })
                 .collect(),
         )
