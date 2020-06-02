@@ -8,7 +8,7 @@ fn draw_cone(scene: &mut Scene, place: Vector, scale: f64) {
     let dir = vec(0., -6.) * scale;
 
     for _ in 1..50 {
-        scene.add_poly(&circle(100).translate(c).scale2(size));
+        scene.add_poly(&circle(100).scale2(size).translate(c));
         size = size * 0.94;
         c = c + dir;
     }
