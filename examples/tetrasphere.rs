@@ -27,9 +27,6 @@ fn main() {
     }
 
     let scene = scene3d.apply(&isometric_projection()).to_2d_scene();
-    let mut plot = scene.to_plot();
-    println!("Before: {:?}", plot.cost());
-    plot = plot.optimize();
-    println!("After: {:?}", plot.cost());
+    let plot = scene.to_plot();
     plot.write_svg(&svg_filename!());
 }

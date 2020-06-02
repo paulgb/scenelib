@@ -90,10 +90,6 @@ fn main() {
         .apply(&isometric_projection())
         .to_2d_scene_with_perspective(1.00013);
 
-    let mut plot = scene.to_plot();
-
-    println!("Before: {:?}", plot.cost());
-    plot = plot.optimize();
-    println!("After: {:?}", plot.cost());
+    let plot = scene.to_plot();
     plot.write_svg(&svg_filename!());
 }
