@@ -1,6 +1,7 @@
 pub use std::f64::consts::PI;
 pub const TWO_PI: f64 = PI * 2.;
 
+pub use crate::draw_mode::{fill_only, pen, stroke};
 pub use crate::export::WriteSVG;
 pub use crate::geom::line_segment::LineSegment;
 pub use crate::geom::polygon::Polygon;

@@ -13,6 +13,20 @@ impl std::default::Default for DrawMode {
     }
 }
 
+pub fn stroke(pen: usize) -> DrawMode {
+    DrawMode {
+        pen: Some(pen),
+        fill: false,
+    }
+}
+
+pub fn fill_only() -> DrawMode {
+    DrawMode {
+        pen: None,
+        fill: true,
+    }
+}
+
 pub fn pen(pen: usize) -> DrawMode {
     DrawMode {
         pen: Some(pen),
