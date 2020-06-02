@@ -87,10 +87,7 @@ impl SVGWriter {
             let d = String::from("black").clone();
             let pen_color: &str = self.layer_to_stroke.get(&layer.pen).unwrap_or(&d);
             let svg_line = Path::new()
-                .set(
-                    "stroke",
-                    pen_color,
-                )
+                .set("stroke", pen_color)
                 .set("fill", "none")
                 .set("vector-effect", "non-scaling-stroke")
                 .set("d", path_data);

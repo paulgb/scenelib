@@ -1,7 +1,7 @@
+use crate::draw_mode::DrawMode;
 use crate::projection::apply::Apply;
 use crate::projection::polygon3::Polygon3;
 use crate::projection::transform::Transform;
-use crate::draw_mode::DrawMode;
 use std::default::Default;
 
 pub struct Form {
@@ -11,7 +11,10 @@ pub struct Form {
 
 impl Form {
     pub fn new(polys: Vec<Polygon3>) -> Form {
-        Form { polys, draw_mode: Default::default() }
+        Form {
+            polys,
+            draw_mode: Default::default(),
+        }
     }
 
     pub fn draw_mode(mut self, draw_mode: DrawMode) -> Form {

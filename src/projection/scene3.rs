@@ -38,8 +38,13 @@ impl Scene3 {
 
     pub fn add_form(&mut self, form: Form) {
         let draw_mode = form.draw_mode.clone();
-        self.polys
-            .append(&mut form.polys.into_iter().map(|d| (d, draw_mode.clone())).collect())
+        self.polys.append(
+            &mut form
+                .polys
+                .into_iter()
+                .map(|d| (d, draw_mode.clone()))
+                .collect(),
+        )
     }
 
     fn project(&self) -> Vec<(Polygon, DrawMode)> {

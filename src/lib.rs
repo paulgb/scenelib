@@ -1,3 +1,4 @@
+pub mod draw_mode;
 pub mod export;
 pub mod geom;
 pub mod optimizer;
@@ -7,7 +8,6 @@ pub mod projection;
 pub mod scene;
 pub mod shape;
 pub mod types;
-pub mod draw_mode;
 
 #[macro_use]
 pub mod util;
