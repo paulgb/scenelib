@@ -1,6 +1,7 @@
 pub mod draw_mode;
 pub mod export;
 pub mod geom;
+pub mod noise;
 pub mod optimizer;
 pub mod plot;
 pub mod prelude;
