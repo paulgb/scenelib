@@ -45,8 +45,8 @@ impl NoiseMaker {
         let yf = y - yi;
 
         let v00 = vec(xf, yf);
-        let v01 = vec(xf - 1., yf);
-        let v10 = vec(xf, yf - 1.);
+        let v01 = vec(xf, yf - 1.);
+        let v10 = vec(xf - 1., yf);
         let v11 = vec(xf - 1., yf - 1.);
 
         let n00 = v00.dot(&self.random_unit(xi as usize, yi as usize));
@@ -76,7 +76,7 @@ fn main() {
             (0..divisions)
                 .map(|i| {
                     let r = noise_maker.noise(i as f64 / resolution as f64, y as f64);
-                    origin + (r + 10.) * Vector::from_angle((i as f64 / divisions as f64) * 2. * PI)
+                    origin + (2. * r + 8.) * Vector::from_angle((i as f64 / divisions as f64) * 2. * PI)
                 })
                 .collect(),
         );
