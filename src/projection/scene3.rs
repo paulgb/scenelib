@@ -4,9 +4,13 @@ use crate::projection::form::Form;
 use crate::projection::polygon3::Polygon3;
 use crate::projection::transform::Transform;
 use crate::scene::Scene;
+use crate::projection::isometric::isometric_projection;
+use na::Rotation3;
 
 pub struct Scene3 {
     pub polys: Vec<Polygon3>,
+    pub perspective: f64,
+    pub projection: Rotation3<f64>,
 }
 
 fn dangerous_compare(x: &f64, y: &f64) -> std::cmp::Ordering {
@@ -15,7 +19,16 @@ fn dangerous_compare(x: &f64, y: &f64) -> std::cmp::Ordering {
 
 impl Scene3 {
     pub fn new() -> Scene3 {
-        Scene3 { polys: Vec::new() }
+        Scene3 {
+            polys: Vec::new(),
+            perspective: 1.0,
+            projection: isometric_projection()
+        }
+    }
+
+    pub fn perspective(mut self, perspective: f64) -> Scene3 {
+        self.perspective = perspective;
+        self
     }
 
     pub fn add_poly(&mut self, poly: Polygon3) {
@@ -26,7 +39,7 @@ impl Scene3 {
         self.polys.append(&mut form.polys)
     }
 
-    pub fn project(&self, perspective: f64) -> Vec<Polygon> {
+    fn project(&self) -> Vec<Polygon> {
         let mut v: Vec<(f64, Polygon)> = self
             .polys
             .iter()
@@ -40,7 +53,7 @@ impl Scene3 {
                     c += 1;
                 }
 
-                (s / c as f64, d.to_2d(perspective))
+                (s / c as f64, d.to_2d(self.perspective))
             })
             .collect();
 
@@ -49,13 +62,13 @@ impl Scene3 {
         v.into_iter().map(|d| d.1).collect()
     }
 
-    pub fn to_2d_scene(&self) -> Scene {
-        self.to_2d_scene_with_perspective(0.0)
-    }
-
-    pub fn to_2d_scene_with_perspective(&self, perspective: f64) -> Scene {
+    pub fn to_2d_scene(self) -> Scene {
         let mut s = Scene::new();
-        for poly in self.project(perspective) {
+
+        // TODO: this is hacky
+        let proj = self.projection.clone();
+        
+        for poly in self.apply(&proj).project() {
             s.add_poly(&poly)
         }
 
@@ -64,8 +77,8 @@ impl Scene3 {
 }
 
 impl Apply for Scene3 {
-    fn apply(self, transform: &dyn Transform) -> Scene3 {
-        let polys = self.polys.into_iter().map(|d| d.apply(transform)).collect();
-        Scene3 { polys }
+    fn apply(mut self, transform: &dyn Transform) -> Scene3 {
+        self.polys = self.polys.into_iter().map(|d| d.apply(transform)).collect();
+        self
     }
 }

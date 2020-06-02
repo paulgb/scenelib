@@ -19,9 +19,9 @@ fn main() {
         }
     }
     let scene = scene3d
-        .apply(&isometric_projection())
         .scale(1. / 15.)
-        .to_2d_scene_with_perspective(1.003);
+        .perspective(1.003)
+        .to_2d_scene();
 
     scene.to_plot().write_svg(&svg_filename!());
 }

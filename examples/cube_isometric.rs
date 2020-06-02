@@ -19,6 +19,6 @@ fn main() {
         }
     }
 
-    let scene = scene3d.apply(&isometric_projection()).to_2d_scene();
+    let scene = scene3d.to_2d_scene();
     scene.to_plot().write_svg(&svg_filename!());
 }

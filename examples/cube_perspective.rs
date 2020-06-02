@@ -13,8 +13,8 @@ fn main() {
     }
 
     scene3d
-        .apply(&isometric_projection())
-        .to_2d_scene_with_perspective(1.01)
+        .perspective(1.01)
+        .to_2d_scene()
         .to_plot()
         .write_svg(&svg_filename!());
 }
