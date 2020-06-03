@@ -1,29 +1,49 @@
 use crate::types::{Vector, VectorExtension};
 use std::f64::consts::PI;
 pub struct NoiseMaker {
-    // Periodicity of noise on the x direction.
-    x_period: usize,
-    // Seed for the x direction.
+    // Periodicity of noise.
+    x_period: Option<usize>,
+    y_period: Option<usize>,
+    // Seeds.
     x_seed: f64,
-    // Seed for the y direction.
     y_seed: f64,
-    // Global seed.
-    seed: f64,
+}
+
+fn pseudo_random(seed: f64) -> f64 {
+    (seed.sin() * 1e10).fract()
 }
 
 impl NoiseMaker {
-    pub fn new(x_period: usize, x_seed: f64, y_seed: f64, seed: f64) -> NoiseMaker {
+    pub fn new(seed: f64) -> NoiseMaker {
+        let x_seed = pseudo_random(seed) * 1e6;
+        let y_seed = pseudo_random(seed + 1.) * 1e6;
+
         NoiseMaker {
-            x_period,
+            x_period: None,
+            y_period: None,
             x_seed,
-            y_seed,
-            seed,
+            y_seed
         }
     }
 
-    fn random(&self, x: usize, y: usize) -> f64 {
-        let x = x % self.x_period;
-        ((x as f64 * self.x_seed + y as f64 * self.y_seed) * 1e10 + self.seed).sin()
+    pub fn x_period(&mut self, x_period: usize) -> &mut NoiseMaker {
+        self.x_period = Some(x_period);
+        self
+    }
+
+    pub fn y_period(&mut self, y_period: usize) -> &mut NoiseMaker {
+        self.y_period = Some(y_period);
+        self
+    }
+
+    fn random(&self, mut x: usize, mut y: usize) -> f64 {
+        if let Some(xp) = self.x_period {
+            x = x % xp;
+        }
+        if let Some(yp) = self.y_period {
+            y = y % yp;
+        }
+        pseudo_random(x as f64 * self.x_seed + y as f64 * self.y_seed)
     }
 
     fn random_unit(&self, x: usize, y: usize) -> Vector {

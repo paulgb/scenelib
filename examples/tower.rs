@@ -8,14 +8,15 @@ fn main() {
     let resolution = 20;
     let divisions = control_points * resolution;
 
-    let noise_maker = NoiseMaker::new(control_points, 36., 74., 0.85);
+    let mut noise_maker = NoiseMaker::new(344.);
+    noise_maker.x_period(control_points);
     let origin = pt(0., 0.);
 
     for y in 1..200 {
         let poly = Polygon::new(
             (0..divisions)
                 .map(|i| {
-                    let r = noise_maker.noise(i as f64 / resolution as f64, y as f64);
+                    let r = noise_maker.noise(i as f64 / resolution as f64, y as f64 / resolution as f64);
                     origin
                         + (2. * r + 8.)
                             * Vector::from_angle((i as f64 / divisions as f64) * 2. * PI)
