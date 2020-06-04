@@ -5,6 +5,15 @@
 
 use crate::types::{Vector, VectorExtension};
 use std::f64::consts::PI;
+
+/// Return a pseudo-random value from a given float.
+pub fn pseudo_random(seed: f64) -> f64 {
+    (seed.sin() * 1e10).fract()
+}
+
+/// Perlin noise generator. Control points are constructed on an
+/// integer grids, and samples can be taken at arbitrary resolution
+/// between them.
 pub struct NoiseMaker {
     // Periodicity of noise.
     x_period: Option<usize>,
@@ -14,12 +23,8 @@ pub struct NoiseMaker {
     y_seed: f64,
 }
 
-/// Return a pseudo-random value from a given float.
-pub fn pseudo_random(seed: f64) -> f64 {
-    (seed.sin() * 1e10).fract()
-}
-
 impl NoiseMaker {
+    /// Construct a new noise generator with an initial seed.
     pub fn new(seed: f64) -> NoiseMaker {
         let x_seed = pseudo_random(seed) * 1e6;
         let y_seed = pseudo_random(seed + 1.) * 1e6;
@@ -32,11 +37,13 @@ impl NoiseMaker {
         }
     }
 
+    /// Set the x period of repetition.
     pub fn x_period(&mut self, x_period: usize) -> &mut NoiseMaker {
         self.x_period = Some(x_period);
         self
     }
 
+    /// Set the y period of repetition.
     pub fn y_period(&mut self, y_period: usize) -> &mut NoiseMaker {
         self.y_period = Some(y_period);
         self
@@ -62,6 +69,7 @@ impl NoiseMaker {
         (1. - w) * v1 + w * v2
     }
 
+    /// Generate a noise value for the given x and y.
     pub fn noise(&self, x: f64, y: f64) -> f64 {
         let xi = x.floor();
         let xf = x - xi;
