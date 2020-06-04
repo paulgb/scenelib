@@ -15,7 +15,7 @@ fn main() {
     }
 
     let mut plot = scene3d
-        .perspective(1.01)
+        .camera_distance(-100.)
         .to_2d()
         .to_plot();
     

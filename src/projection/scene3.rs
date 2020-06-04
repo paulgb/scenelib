@@ -27,8 +27,8 @@ impl Scene3 {
         }
     }
 
-    pub fn perspective(mut self, perspective: f64) -> Scene3 {
-        self.perspective = perspective;
+    pub fn camera_distance(mut self, camera_distance: f64) -> Scene3 {
+        self.perspective = 1. - (1. / camera_distance);
         self
     }
 
