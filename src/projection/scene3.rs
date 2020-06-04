@@ -77,12 +77,7 @@ impl Scene3 {
         let proj = self.projection.clone();
 
         for (poly, draw_mode) in self.apply(&proj).project() {
-            if draw_mode.fill {
-                s.fill_poly(&poly)
-            }
-            if let Some(pen) = draw_mode.pen {
-                s.stroke_poly(&poly, pen)
-            }
+            s.add_poly_with_draw_mode(&poly, draw_mode)
         }
 
         s

@@ -1,3 +1,4 @@
+use crate::draw_mode::DrawMode;
 use crate::geom::line_segment::LineSegment;
 use crate::geom::polygon::Polygon;
 use crate::plot::{Layer, Plot};
@@ -145,12 +146,17 @@ impl Scene {
     }
 
     pub fn add_poly(&mut self, poly: &Polygon) {
-        self.add_poly_with_pen(poly, 0)
+        self.fill_poly(&poly);
+        self.stroke_poly(poly, 0);
     }
 
-    pub fn add_poly_with_pen(&mut self, poly: &Polygon, pen: usize) {
-        self.fill_poly(poly);
-        self.stroke_poly(poly, pen);
+    pub fn add_poly_with_draw_mode(&mut self, poly: &Polygon, draw_mode: DrawMode) {
+        if draw_mode.fill {
+            self.fill_poly(&poly)
+        }
+        if let Some(pen) = draw_mode.pen {
+            self.stroke_poly(&poly, pen)
+        }
     }
 }
 
