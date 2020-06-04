@@ -14,7 +14,8 @@ pub struct NoiseMaker {
     y_seed: f64,
 }
 
-fn pseudo_random(seed: f64) -> f64 {
+/// Return a pseudo-random value from a given float.
+pub fn pseudo_random(seed: f64) -> f64 {
     (seed.sin() * 1e10).fract()
 }
 
