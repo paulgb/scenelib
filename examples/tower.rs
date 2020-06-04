@@ -16,7 +16,8 @@ fn main() {
         let poly = Polygon::new(
             (0..divisions)
                 .map(|i| {
-                    let r = noise_maker.noise(i as f64 / resolution as f64, y as f64 / resolution as f64);
+                    let r = noise_maker
+                        .noise(i as f64 / resolution as f64, y as f64 / resolution as f64);
                     origin
                         + (2. * r + 8.)
                             * Vector::from_angle((i as f64 / divisions as f64) * 2. * PI)

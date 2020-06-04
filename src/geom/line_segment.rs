@@ -1,3 +1,7 @@
+//! Basic representation of line segments, which are the most
+//! basic unit of a `Scene`. This is also where the heart of
+//! the intersection code lives (`LineSegment::intersect_segment`).
+
 use crate::types::{Point, PointActions, PointContainer, Vector, VectorExtension};
 use rstar::{RTreeObject, AABB};
 
@@ -6,10 +10,15 @@ use rstar::{RTreeObject, AABB};
 // to the lowest order of magnitude where the issues disappear.
 const EPSILON: f64 = 1e-14;
 
+/// Represents a two dimensional line segment, defined in terms of
+/// its endpoints.
 #[derive(PartialEq, Clone, Copy)]
 pub struct LineSegment {
+    /// The first endpoint of the line segment.
     pub c1: Point,
+    /// The second endpoint of the line segment.
     pub c2: Point,
+    /// The pen to use to draw this line segment.
     pub pen: usize,
 }
 
@@ -57,15 +66,18 @@ impl RTreeObject for LineSegment {
 }
 
 impl LineSegment {
+    /// Create a new line segment with the default pen.
     pub fn new(c1: Point, c2: Point) -> LineSegment {
         LineSegment { c1, c2, pen: 0 }
     }
 
+    /// Create a new line segment with a given pen.
     pub fn new_with_pen(c1: Point, c2: Point, pen: usize) -> LineSegment {
         LineSegment { c1, c2, pen }
     }
 
-    pub fn reverse(&self) -> LineSegment {
+    #[cfg(test)]
+    fn reverse(&self) -> LineSegment {
         LineSegment {
             c1: self.c2,
             c2: self.c1,
@@ -73,15 +85,19 @@ impl LineSegment {
         }
     }
 
+    /// Construct a vector matching the direction and length of the line segment.
     pub fn vector(&self) -> Vector {
         self.c2 - self.c1
     }
 
+    /// Determines whether two line segments intersect, and returns a value accordingly:
+    /// - If the line segments intersect, returns the fraction along *this* line segment
+    ///   at which they intersect.
+    /// - Otherwise, if this line segment *extended to infinity* intersects the other line
+    ///   segment, return the location along this line in terms of the length of the line
+    ///   segment at which they intersect, i.e. a number less than 0 or greater than 1.
+    /// - Otherwise, return `None`.
     pub fn intersect_segment(&self, other: &LineSegment) -> Option<(f64, bool)> {
-        // If we were to extend this line out to infinity, would the other
-        // line segment intersect it? If so, return the fraction along our
-        // segment at which the intersection occurs and the direction.
-
         let v = self.vector();
 
         // The algorithm assumes that the current line has finite slope (i.e. that

@@ -7,12 +7,18 @@ use svg::node::element::Group;
 use svg::node::element::Path;
 use svg::Document;
 
+/// Builder for writing a `Plot` to an `.svg` file.
 pub struct SVGWriter {
+    /// The plot to write.
     plot: Plot,
+    /// A map from pen number to SVG color. This is used only to set the color
+    /// used for screen display, and does not affect the final plot.
     layer_to_stroke: HashMap<usize, String>,
 }
 
+/// Objects that can be turned into an SVG builder.
 pub trait WriteSVG {
+    /// Turn this object into a builder for writing an `.svg` file.
     fn to_svg(self) -> SVGWriter;
 }
 
@@ -42,6 +48,7 @@ impl WriteSVG for Plot {
 }
 
 impl SVGWriter {
+    /// Write the resulting SVG to a file at the given location.
     pub fn save(&self, filename: &str) {
         let Plot {
             lower_bound,

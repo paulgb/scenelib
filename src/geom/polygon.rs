@@ -1,16 +1,23 @@
+//! Represents a polygon in two dimensions.
+
 use crate::types::{Point, PointContainer};
 
 use crate::geom::line_segment::LineSegment;
 use rstar::{RTreeObject, AABB};
 
+/// A vector of `Point`s, an underlying feature of a `Polygon`.
 #[derive(Debug, Clone)]
 pub struct PointLoop(pub Vec<Point>);
 
 impl PointLoop {
+    /// Construct a vector of `LineSegments` representing this polygon with
+    /// the default pen.
     pub fn line_segments(&self) -> Vec<LineSegment> {
         self.line_segments_with_pen(0)
     }
 
+    /// Construct a vector of `LineSegments` representing this polygon with
+    /// a given pen.
     pub fn line_segments_with_pen(&self, pen: usize) -> Vec<LineSegment> {
         let PointLoop(points) = self;
         let mut result = Vec::new();
@@ -31,9 +38,15 @@ impl PointLoop {
     }
 }
 
+/// Represents a two dimensional polygon.
+/// Any direction (clockwise or counter-clockwise) is acceptable for `points`,
+/// but each `PointLoop` in `holes` *must be opposite* to the direction
+/// of `points`.
 #[derive(Clone)]
 pub struct Polygon {
+    /// The outline of the polygon.
     pub points: PointLoop,
+    /// A list of holes cut out of the polygon.
     pub holes: Vec<PointLoop>,
 }
 
@@ -79,6 +92,7 @@ impl RTreeObject for Polygon {
 }
 
 impl Polygon {
+    /// Create a new polygon from a vector of points, with no holes.
     pub fn new(points: Vec<Point>) -> Polygon {
         Polygon {
             points: PointLoop(points),
@@ -86,6 +100,7 @@ impl Polygon {
         }
     }
 
+    /// Create a new polygon from a vector of coordinates as float pairs.
     pub fn from_coords(coords: Vec<(f64, f64)>) -> Polygon {
         Polygon {
             points: PointLoop(coords.iter().map(|d| Point::new(d.0, d.1)).collect()),
@@ -93,6 +108,7 @@ impl Polygon {
         }
     }
 
+    /// Create a new polygon that has holes.
     pub fn with_holes(points: Vec<Point>, holes: Vec<Vec<Point>>) -> Polygon {
         Polygon {
             points: PointLoop(points),

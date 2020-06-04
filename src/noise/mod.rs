@@ -22,7 +22,7 @@ impl NoiseMaker {
             x_period: None,
             y_period: None,
             x_seed,
-            y_seed
+            y_seed,
         }
     }
 

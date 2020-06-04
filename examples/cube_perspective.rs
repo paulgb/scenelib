@@ -14,16 +14,11 @@ fn main() {
         }
     }
 
-    let mut plot = scene3d
-        .camera_distance(-100.)
-        .to_2d()
-        .to_plot();
-    
+    let mut plot = scene3d.camera_distance(-100.).to_2d().to_plot();
+
     println!("Before optimization: {:?}", plot.cost());
     plot = plot.optimize();
     println!("After optimization: {:?}", plot.cost());
-    
-    plot
-        .to_svg()
-        .save(&svg_filename!());
+
+    plot.to_svg().save(&svg_filename!());
 }
