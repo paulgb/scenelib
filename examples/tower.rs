@@ -30,6 +30,6 @@ fn main() {
         scene3d.add_poly(p3);
     }
 
-    let scene = scene3d.camera_distance(-8000.).to_2d();
+    let scene = scene3d.camera_distance(8000.).to_2d();
     scene.to_svg().save(&svg_filename!());
 }
