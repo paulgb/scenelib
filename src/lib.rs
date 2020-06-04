@@ -1,3 +1,5 @@
+//! Rendering pipeline for pen-plotted 3D graphics.
+
 pub mod draw_mode;
 pub mod export;
 pub mod geom;

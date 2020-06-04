@@ -7,7 +7,7 @@ fn main() {
     let origin = vec(20., 40.);
     let size = vec(40., 20.);
 
-    let s1 = rect().scale2(size).translate(origin);
+    let s1 = square().scale2(size).translate(origin);
     scene.add_poly(&circle(100).scale(100.).translate(origin + size * 3.));
 
     for i in 0..40 {

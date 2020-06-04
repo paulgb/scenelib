@@ -1,9 +1,15 @@
+//! Primitive shape implementations.
+//! Shapes are of unit size and are created at the origin;
+//! they are represented as `Polygon`s and so can be transformed
+//! as needed after creation.
+
 use crate::geom::polygon::Polygon;
 use crate::types::{Point, Vector, VectorExtension};
 
 use std::f64::consts::PI;
 
-pub fn rect() -> Polygon {
+/// Construct a 2x2 square centered at the origin.
+pub fn square() -> Polygon {
     Polygon::new(vec![
         Point::new(-1., -1.),
         Point::new(-1., 1.),
@@ -12,6 +18,7 @@ pub fn rect() -> Polygon {
     ])
 }
 
+/// Construct a unit circle at the origin.
 pub fn circle(divisions: usize) -> Polygon {
     Polygon::new(
         (0..divisions)

@@ -1,3 +1,5 @@
+//! Specifies how a polygon is added to a scene.
+
 /// Represents a mode for drawing a polygon to a plot.
 #[derive(Clone)]
 pub struct DrawMode {

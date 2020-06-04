@@ -1,11 +1,18 @@
 use std::iter::Sum;
 use std::ops::AddAssign;
 
+/// Represents the cost of a plot.
+/// `move_cost` and `moves` are dependent on drawing order of the plot;
+/// `line_cost` and `segments` are not.
 #[derive(Debug, Default)]
 pub struct PlotCost {
+    /// The total amount of pen-down distance.
     pub move_cost: f64,
+    /// The total amount of pen-up distance.
     pub line_cost: f64,
+    /// The number of `LineSegments` in the plot.
     pub segments: usize,
+    /// The number of pen-up moves.
     pub moves: usize,
 }
 

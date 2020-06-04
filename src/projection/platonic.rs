@@ -1,7 +1,11 @@
+//! Implements some basic Platonic solids.
+//! Currently only two are implemented (PRs accepted for the others).
+
 use crate::projection::form::Form;
 use crate::projection::polygon3::Polygon3;
 use crate::projection::types3::Point3;
 
+/// Construct a tetrahedron `Form`.
 pub fn tetrahedron() -> Form {
     let p1 = Point3::new((8. / 9. as f64).sqrt(), 0., -1. / 3.);
     let p2 = Point3::new(-(2. / 9. as f64).sqrt(), (2. / 3. as f64).sqrt(), -1. / 3.);
@@ -16,6 +20,7 @@ pub fn tetrahedron() -> Form {
     ])
 }
 
+/// Construct a cube `Form`.
 pub fn cube() -> Form {
     let p000 = Point3::new(-0.5, -0.5, -0.5);
     let p001 = Point3::new(-0.5, -0.5, 0.5);

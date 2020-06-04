@@ -1,3 +1,8 @@
+//! Deterministic implementation of two dimensional
+//! [Perlin Noise](https://en.wikipedia.org/wiki/Perlin_noise).
+//! Allows noise to optionally be looped in the x and y
+//! directions, or both, for creating smooth cyclic patterns.
+
 use crate::types::{Vector, VectorExtension};
 use std::f64::consts::PI;
 pub struct NoiseMaker {

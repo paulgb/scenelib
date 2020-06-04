@@ -1,3 +1,5 @@
+//! Representation and manipulation of 2D scenes.
+
 use crate::draw_mode::DrawMode;
 use crate::geom::line_segment::LineSegment;
 use crate::geom::polygon::Polygon;
@@ -5,17 +7,27 @@ use crate::plot::{Layer, Plot};
 use crate::types::Point;
 use rstar::{RTree, RTreeObject, AABB};
 use std::collections::BTreeMap;
+
+/// Represents a 2D scene, indexed for efficient addition of
+/// shapes. The underlying representation of a scene is a set
+/// of lines, but shapes can be added as polygons. When polygons
+/// are added, "fill" can be simulated by removing parts of
+/// existing line segments that the polygon covers.
+/// Similar to raster graphics pipelines, polygons are expected
+/// to be added back-to-front.
 pub struct Scene {
     lines: RTree<LineSegment>,
 }
 
 impl Scene {
+    /// Constructs an empty scene.
     pub fn new() -> Scene {
         Scene {
             lines: RTree::new(),
         }
     }
 
+    /// Converts a scene to a `Plot` without optimizing it.
     pub fn to_plot(&self) -> Plot {
         let bounds = self.lines.root().envelope();
         let lower_bound: Point = Point::from(bounds.lower());
@@ -35,14 +47,20 @@ impl Scene {
         Plot::new(layers, lower_bound, upper_bound)
     }
 
+    /// Computes the bounds of the scene.
     pub fn bounds(&self) -> AABB<[f64; 2]> {
         self.lines.root().envelope()
     }
 
+    /// Adds a single line segment. Does not consider overlaps since lines have an
+    /// empty area.
     pub fn add_segment(&mut self, segment: LineSegment) {
         self.lines.insert(segment);
     }
 
+    /// Simulate "fill" for the given polygon by erasing parts of line segments
+    /// which it covers. Does not outline the polygon; this should be done with
+    /// `stroke_poly` *after* `fill_poly`.
     pub fn fill_poly(&mut self, poly: &Polygon) {
         let segments = {
             let mut s = poly.points.line_segments();
@@ -134,6 +152,7 @@ impl Scene {
         }
     }
 
+    /// Draw lines around the perimeter of a polygon and its holes.
     pub fn stroke_poly(&mut self, poly: &Polygon, pen: usize) {
         for line in poly.points.line_segments_with_pen(pen) {
             self.add_segment(line);
@@ -145,11 +164,13 @@ impl Scene {
         }
     }
 
+    /// Adds a polygon to the scene with the default draw mode.
     pub fn add_poly(&mut self, poly: &Polygon) {
         self.fill_poly(&poly);
         self.stroke_poly(poly, 0);
     }
 
+    /// Adds a polygon to the scene with a given draw mode.
     pub fn add_poly_with_draw_mode(&mut self, poly: &Polygon, draw_mode: DrawMode) {
         if draw_mode.fill {
             self.fill_poly(&poly)

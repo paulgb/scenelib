@@ -1,3 +1,5 @@
+//! Tools for 3D scene construction.
+
 pub mod apply;
 pub mod form;
 pub mod isometric;

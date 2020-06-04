@@ -1,16 +1,25 @@
+//! Aliases and adds utility methods to `Point2`.
+
 use crate::types::to_string::ToString;
 use crate::types::vector::Vector;
 use na::{Point2, Point3};
 
+/// Indicates that a struct contains points and can be manipulated
+/// by passing a point modifier.
 pub trait PointContainer {
     fn apply(self, lambda: &dyn Fn(Point) -> Point) -> Self;
 }
 
 pub trait PointActions {
+    /// Translate contained points by a given vector.
     fn translate(self, amount: Vector) -> Self;
+    /// Scale contained points with respect to the origin by a uniform amount.
     fn scale(self, amount: f64) -> Self;
+    /// Scale contained points with respect to the origin by a given vector.
     fn scale2(self, amount: Vector) -> Self;
+    /// Rotate contained points around the origin by an amount in radians.
     fn rotate(self, amount: f64) -> Self;
+    /// Flip contained points along the x=y axis.
     fn xy_flip(self) -> Self;
 }
 
@@ -57,6 +66,7 @@ impl ToString for Point {
     }
 }
 
+/// Constructor for a 2D point.
 pub fn pt(x: f64, y: f64) -> Point {
     Point::new(x, y)
 }

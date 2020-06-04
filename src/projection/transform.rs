@@ -1,6 +1,10 @@
+//! Generalizes multiplication of points with transformation
+//! matrices.
+
 use crate::projection::types3::{Point3, Vector3};
 use nalgebra::{Perspective3, Rotation3, Translation3};
 
+/// Indicates that a struct can be used to transform a point.
 pub trait Transform {
     fn transform_point(&self, point: Point3) -> Point3;
 }

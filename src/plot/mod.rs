@@ -1,3 +1,5 @@
+//! Representation of a plot.
+
 pub mod cost;
 
 use crate::geom::line_segment::LineSegment;
@@ -5,6 +7,7 @@ use crate::optimizer::greedy_optimize;
 use crate::plot::cost::PlotCost;
 use crate::types::Point;
 
+/// Represents the drawing commands for a single pen.
 #[derive(Clone)]
 pub struct Layer {
     pub lines: Vec<LineSegment>,
@@ -12,6 +15,7 @@ pub struct Layer {
 }
 
 impl Layer {
+    /// Create a new layer, initially empty, with the given pen.
     pub fn new(pen: usize) -> Layer {
         Layer {
             lines: Vec::new(),
@@ -19,6 +23,7 @@ impl Layer {
         }
     }
 
+    /// Compute the cost of drawing the plot on a number of metrics.
     pub fn cost(&self, origin: Point) -> PlotCost {
         let mut move_cost = 0.;
         let mut line_cost = 0.;
@@ -48,6 +53,7 @@ impl Layer {
     }
 }
 
+/// Represents a plot in terms of `Layer`s.
 #[derive(Clone)]
 pub struct Plot {
     pub layers: Vec<Layer>,
@@ -57,6 +63,7 @@ pub struct Plot {
 }
 
 impl Plot {
+    /// Construct a plot from the given layers.
     pub fn new(layers: Vec<Layer>, lower_bound: Point, upper_bound: Point) -> Plot {
         Plot {
             layers,
@@ -66,10 +73,13 @@ impl Plot {
         }
     }
 
+    /// Compute the cost of a plot, which is the sum of the cost of layers.
+    /// This assumes that the pen returns to the origin between each layer.
     pub fn cost(&self) -> PlotCost {
         self.layers.iter().map(|l| l.cost(self.origin)).sum()
     }
 
+    /// Apply greedy optimization to the plot.
     pub fn optimize(mut self) -> Plot {
         let mut v = Vec::new();
         std::mem::swap(&mut self.layers, &mut v);

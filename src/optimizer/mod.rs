@@ -1,3 +1,5 @@
+//! Methods of optimizing drawing order for a pen plot.
+
 use crate::geom::line_segment::LineSegment;
 use crate::plot::Layer;
 use crate::types::Point;
@@ -32,6 +34,8 @@ impl PointDistance for TreeElement {
     }
 }
 
+/// Perform greedy optimization on the given layer, starting
+/// at the given origin.
 pub fn greedy_optimize(layer: Layer, origin: Point) -> Layer {
     let points: Vec<TreeElement> = layer
         .lines

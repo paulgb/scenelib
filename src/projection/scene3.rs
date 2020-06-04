@@ -1,3 +1,5 @@
+//! Three dimensional scenes.
+
 use crate::draw_mode::DrawMode;
 use crate::geom::polygon::Polygon;
 use crate::projection::apply::Apply;
@@ -8,9 +10,15 @@ use crate::projection::transform::Transform;
 use crate::scene::Scene;
 use na::Rotation3;
 
+/// Represents a 3D scene as a set of 3D polygons (with associated
+/// draw modes). Also acts as a builder for a 2D scene by storing
+/// a rotation and perspective.
 pub struct Scene3 {
+    /// Polygons and drawing instructions.
     pub polys: Vec<(Polygon3, DrawMode)>,
+    /// Perspective to apply when converting to 2D.
     pub perspective: f64,
+    /// Rotation to apply when converting to 2D.
     pub projection: Rotation3<f64>,
 }
 
@@ -19,6 +27,7 @@ fn dangerous_compare(x: &f64, y: &f64) -> std::cmp::Ordering {
 }
 
 impl Scene3 {
+    /// Create a new 3D scene with an isometric projection (no perspective).
     pub fn new() -> Scene3 {
         Scene3 {
             polys: Vec::new(),
@@ -27,15 +36,18 @@ impl Scene3 {
         }
     }
 
+    /// Set the perspective based on distance from the camera to the origin.
     pub fn camera_distance(mut self, camera_distance: f64) -> Scene3 {
         self.perspective = 1. - (1. / camera_distance);
         self
     }
 
+    /// Add a 3D polygon to the scene with the default draw mode.
     pub fn add_poly(&mut self, poly: Polygon3) {
         self.polys.push((poly, Default::default()));
     }
 
+    /// Add a 3D shape to the scene.
     pub fn add_form(&mut self, form: Form) {
         let draw_mode = form.draw_mode.clone();
         self.polys.append(
@@ -70,6 +82,7 @@ impl Scene3 {
         v.into_iter().map(|d| (d.1, d.2)).collect()
     }
 
+    /// Project the scene into 2D.
     pub fn to_2d(self) -> Scene {
         let mut s = Scene::new();
 

@@ -1,3 +1,5 @@
+//! Tools for exporting plots. Currently supports SVG.
+
 use crate::plot::Plot;
 use crate::scene::Scene;
 use crate::types::Point;

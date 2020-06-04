@@ -1,3 +1,5 @@
+//! Utility functions for sketching.
+
 /// Generates a filename based on the name of the file it is called from.
 #[macro_export]
 macro_rules! svg_filename {
