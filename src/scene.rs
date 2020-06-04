@@ -32,7 +32,7 @@ impl Scene {
 
         let layers: Vec<Layer> = layers_map.values().into_iter().map(|x| x.clone()).collect();
 
-        Plot::new(layers, lower_bound, upper_bound).optimize()
+        Plot::new(layers, lower_bound, upper_bound)
     }
 
     pub fn bounds(&self) -> AABB<[f64; 2]> {

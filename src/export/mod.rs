@@ -26,7 +26,7 @@ fn default_fills() -> HashMap<usize, String> {
 impl WriteSVG for Scene {
     fn to_svg(self) -> SVGWriter {
         SVGWriter {
-            plot: self.to_plot(),
+            plot: self.to_plot().optimize(),
             layer_to_stroke: default_fills(),
         }
     }

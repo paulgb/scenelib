@@ -14,9 +14,16 @@ fn main() {
         }
     }
 
-    scene3d
+    let mut plot = scene3d
         .perspective(1.01)
         .to_2d()
+        .to_plot();
+    
+    println!("Before optimization: {:?}", plot.cost());
+    plot = plot.optimize();
+    println!("After optimization: {:?}", plot.cost());
+    
+    plot
         .to_svg()
         .save(&svg_filename!());
 }
