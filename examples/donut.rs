@@ -11,7 +11,6 @@ fn main() {
     let y_res = 10;
     noise_maker.x_period(x_res);
     noise_maker.y_period(y_res);
-    let resolution = 20.;
     let origin = pt(0., 0.);
 
     for y in 0..circles {
@@ -27,7 +26,7 @@ fn main() {
                 .collect(),
         );
 
-        let theta = ((y as f64 / circles as f64) - 0.5) * 1.5 * PI;
+        let theta = (y as f64 / circles as f64) * 2. * PI;
         let mut p3 = Polygon3::from_poly(&poly);
         p3 = p3
             .scale(10.)
@@ -37,6 +36,6 @@ fn main() {
         scene3d.add_poly(p3);
     }
 
-    let scene = scene3d.camera_distance(5000.).to_2d();
+    let scene = scene3d.camera_distance(10000.).to_2d();
     scene.to_svg().axidraw_portrait().save(&svg_filename!());
 }
