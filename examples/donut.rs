@@ -17,8 +17,10 @@ fn main() {
         let poly = Polygon::new(
             (0..divisions)
                 .map(|i| {
-                    let r = noise_maker
-                        .noise((x_res * i) as f64 / divisions as f64, (y_res * y) as f64 / circles as f64);
+                    let r = noise_maker.noise(
+                        (x_res * i) as f64 / divisions as f64,
+                        (y_res * y) as f64 / circles as f64,
+                    );
                     origin
                         + (5. * r + 8.)
                             * Vector::from_angle((i as f64 / divisions as f64) * 2. * PI)
@@ -31,9 +33,15 @@ fn main() {
         p3 = p3
             .scale(10.)
             .translate(vec3(-200., 0., 0.))
-            .rotate_euler(0., theta, 0.)
-        ;
-        scene3d.add_poly(p3);
+            .rotate_euler(0., theta, 0.);
+        scene3d.add_poly_with_pen(
+            p3,
+            pen(if pseudo_random(y as f64) > 0.4 {
+                1
+            } else {
+                0
+            }),
+        );
     }
 
     let scene = scene3d.camera_distance(10000.).to_2d();

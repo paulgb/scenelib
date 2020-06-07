@@ -47,6 +47,11 @@ impl Scene3 {
         self.polys.push((poly, Default::default()));
     }
 
+    /// Add a 3D polygon to the scene with the given pen.
+    pub fn add_poly_with_pen(&mut self, poly: Polygon3, draw_mode: DrawMode) {
+        self.polys.push((poly, draw_mode));
+    }
+
     /// Add a 3D shape to the scene.
     pub fn add_form(&mut self, form: Form) {
         let draw_mode = form.draw_mode.clone();
@@ -63,9 +68,7 @@ impl Scene3 {
         let mut v: Vec<(f64, Polygon, DrawMode)> = self
             .polys
             .iter()
-            .map(|d| {
-                (d.0.center.z, d.0.to_2d(self.perspective), d.1.clone())
-            })
+            .map(|d| (d.0.center.z, d.0.to_2d(self.perspective), d.1.clone()))
             .collect();
 
         v.sort_by(|x, y| dangerous_compare(&x.0, &y.0));
