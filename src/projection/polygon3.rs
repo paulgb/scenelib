@@ -13,6 +13,7 @@ use crate::types::Point;
 #[derive(Clone)]
 pub struct Polygon3 {
     pub points: Vec<Point3>,
+    pub center: Point3,
 }
 
 impl Polygon3 {
@@ -35,8 +36,8 @@ impl Polygon3 {
 
 impl Polygon3 {
     /// Construct a new polygon from a list of 3D points.
-    pub fn new(points: Vec<Point3>) -> Polygon3 {
-        Polygon3 { points }
+    pub fn new(points: Vec<Point3>, center: Point3) -> Polygon3 {
+        Polygon3 { points, center }
     }
 
     /// Construct a new 3D polygon from a 2D polygon.
@@ -47,7 +48,7 @@ impl Polygon3 {
             .iter()
             .map(|p: &Point| Point3::new(p.x, p.y, 0.0))
             .collect();
-        Polygon3 { points }
+        Polygon3 { points, center: Point3::new(0., 0., 0.) }
     }
 }
 
@@ -56,6 +57,7 @@ impl Apply for Polygon3 {
         for d in self.points.iter_mut() {
             *d = transformation.transform_point(*d)
         }
+        self.center = transformation.transform_point(self.center);
         self
     }
 }

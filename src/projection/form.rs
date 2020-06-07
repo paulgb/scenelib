@@ -44,6 +44,7 @@ impl Form {
                 .iter()
                 .map(|p: &Point| Point3::new(p.x, p.y, 0.0))
                 .collect(),
+            center: Point3::new(0., 0., 0.)
         };
 
         polys.push(cap.clone().translate(Vector3::new(0., 0., height)));
@@ -57,6 +58,11 @@ impl Form {
                     Point3::new(line.c2.x, line.c2.y, -height),
                     Point3::new(line.c1.x, line.c1.y, -height),
                 ],
+                center: Point3::new(
+                    (line.c1.x + line.c2.x) / 2.,
+                    (line.c1.y + line.c2.y) / 2.,
+                    0.
+                )
             };
 
             polys.push(p);

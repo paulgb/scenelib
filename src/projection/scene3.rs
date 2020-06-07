@@ -64,16 +64,7 @@ impl Scene3 {
             .polys
             .iter()
             .map(|d| {
-                let mut s = 0.;
-                let mut c = 0;
-
-                // TODO: this is a hack.
-                for p in d.0.points.iter() {
-                    s += p.z;
-                    c += 1;
-                }
-
-                (s / c as f64, d.0.to_2d(self.perspective), d.1.clone())
+                (d.0.center.z, d.0.to_2d(self.perspective), d.1.clone())
             })
             .collect();
 
