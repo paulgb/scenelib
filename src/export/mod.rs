@@ -60,11 +60,11 @@ impl WriteSVG for Plot {
 }
 
 impl SVGWriter {
-    /*
-    fn scale_point(&self, point: Point) -> (f64, f64) {
-        
+    pub fn axidraw_portrait(&mut self) -> &mut SVGWriter {
+        self.width = DEFAULT_HEIGHT;
+        self.height = DEFAULT_WIDTH;
+        self
     }
-    */
 
     /// Write the resulting SVG to a file at the given location.
     pub fn save(&self, filename: &str) {

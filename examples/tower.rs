@@ -31,5 +31,5 @@ fn main() {
     }
 
     let scene = scene3d.camera_distance(8000.).to_2d();
-    scene.to_svg().save(&svg_filename!());
+    scene.to_svg().axidraw_portrait().save(&svg_filename!());
 }
