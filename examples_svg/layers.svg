@@ -1,8 +1,8 @@
-<svg viewBox="-1.125 -1.125 2.75 2.75" xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+<svg height="218mm" viewBox="0 0 300 218" width="300mm" xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
 <g inkscape:groupmode="layer" inkscape:label="1">
-<path d="M-0.5,1 L-1,1 L-1,-1 L1,-1 L1,-0.5" fill="none" stroke="red" vector-effect="non-scaling-stroke"/>
+<path d="M91.14,167.86 L51.9,167.86 L51.9,10.9 L208.86,10.9 L208.86,50.14" fill="none" stroke="red" vector-effect="non-scaling-stroke"/>
 </g>
 <g inkscape:groupmode="layer" inkscape:label="2">
-<path d="M-0.5,-0.5 L-0.5,1.5 L1.5,1.5 L1.5,-0.5 L-0.5,-0.5" fill="none" stroke="blue" vector-effect="non-scaling-stroke"/>
+<path d="M91.14,50.14 L91.14,207.1 L248.1,207.1 L248.1,50.14 L91.14,50.14" fill="none" stroke="blue" vector-effect="non-scaling-stroke"/>
 </g>
 </svg>
