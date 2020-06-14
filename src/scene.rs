@@ -62,34 +62,50 @@ impl Scene {
     /// which it covers. Does not outline the polygon; this should be done with
     /// `stroke_poly` *after* `fill_poly`.
     pub fn fill_poly(&mut self, poly: &Polygon) {
-        let segments = {
-            let mut s = poly.points.line_segments();
-
-            for hole in &poly.holes {
-                s.append(&mut hole.line_segments().clone());
-            }
-
-            s
-        };
-
         let mut drop_segments: Vec<LineSegment> = Vec::new();
         let mut new_segments: Vec<LineSegment> = Vec::new();
 
         for line in self.lines.locate_in_envelope_intersecting(&poly.envelope()) {
-            let mut crossings: Vec<(f64, bool)> = Vec::new();
+            let mut crossings: Vec<f64> = Vec::new();
+
+            let mut point_loops = vec![&poly.points];
+            point_loops.extend(&poly.holes);
+
+            let mut inter = false;
             let mut pre = false;
             let mut post = false;
-            let mut inter = false;
-            for poly_line in &segments {
-                if let Some((frac, direction)) = line.intersect_segment(poly_line) {
-                    if frac < 0. {
-                        pre = true;
-                    } else if frac > 1. {
-                        post = true;
-                    } else {
-                        inter = true;
+
+            for point_loop in point_loops {
+                let point_sides: Vec<(&Point, bool)> = point_loop
+                    .0
+                    .iter()
+                    .map(|p| (p, line.point_side(p)))
+                    .collect();
+
+                let mut last = match point_sides.last() {
+                    Some(p) => p,
+                    None => continue,
+                };
+
+                for point_side in &point_sides {
+                    if point_side.1 != last.1 {
+                        // This line segment crosses.
+                        let (f, _) = line
+                            .intersect_lines(&LineSegment::new(*last.0, *point_side.0))
+                            .unwrap();
+
+                        if f < 0. {
+                            pre = true;
+                        } else if f > 1. {
+                            post = true;
+                        } else {
+                            inter = true;
+                        }
+
+                        crossings.push(f);
                     }
-                    crossings.push((frac, direction));
+
+                    last = point_side;
                 }
             }
 
@@ -104,14 +120,13 @@ impl Scene {
 
             crossings.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
-            let mut last = 0.0;
-            let v = line.vector();
-            let mut last_direction: Option<bool> = None;
             let mut draw = true;
-            for (frac, direction) in crossings {
-                if frac > 1.0 {
+            let mut last = 0.;
+            let v = line.vector();
+            for frac in crossings {
+                if frac > 1. {
                     break;
-                } else if frac >= last {
+                } else if frac > last {
                     if draw {
                         new_segments.push(LineSegment::new_with_pen(
                             line.c1 + v * last,
@@ -119,22 +134,13 @@ impl Scene {
                             line.pen,
                         ));
                     }
-
                     last = frac;
                 }
 
-                if let Some(ld) = last_direction {
-                    if ld != direction {
-                        // Only flip draw if the direction has actually flipped.
-                        draw = !draw;
-                    }
-                } else {
-                    draw = !draw;
-                }
-                last_direction = Some(direction)
+                draw = !draw;
             }
 
-            if draw {
+            if draw && last < 1. {
                 new_segments.push(LineSegment::new_with_pen(
                     line.c1 + v * last,
                     line.c2,

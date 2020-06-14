@@ -85,32 +85,10 @@ impl LineSegment {
         self.c2 - self.c1
     }
 
-    /// Determines whether two line segments intersect, and returns a value accordingly:
-    /// - If the line segments intersect, returns the fraction along *this* line segment
-    ///   at which they intersect.
-    /// - Otherwise, if this line segment *extended to infinity* intersects the other line
-    ///   segment, return the location along this line in terms of the length of the line
-    ///   segment at which they intersect, i.e. a number less than 0 or greater than 1.
-    /// - Otherwise, return `None`.
-    pub fn intersect_segment(&self, other: &LineSegment) -> Option<(f64, bool)> {
-        match self.intersect_lines(other) {
-            Some((f1, f2)) if (0. <= f2 && f2 <= 1.) => {
-                let direction = {
-                    let v = self.c2 - self.c1;
-                    let ov = other.c2 - other.c1;
-                    let perp_dot = (v.x * ov.y) - (v.y * ov.x);
-
-                    if perp_dot == 0. {
-                        // The lines are parallel.
-                        return None;
-                    } else {
-                        perp_dot > 0.
-                    }
-                };
-                Some((f1, direction))
-            }
-            _ => None,
-        }
+    pub fn point_side(&self, point: &Point) -> bool {
+        let v1 = point - self.c1;
+        let v2 = self.vector();
+        return v1.dot(&Vector::new(-v2.y, v2.x)) >= 0.;
     }
 
     /// Returns the location at which two lines (extended to infinity) intersect, relative
@@ -191,6 +169,7 @@ mod tests {
         }};
     }
 
+    /*
     #[test]
     fn test_intersect_vertical() {
         let l1 = LineSegment::new(pt(0., 5.), pt(10., 5.));
@@ -206,13 +185,16 @@ mod tests {
         assert_eq!(None, l1.intersect_segment(&l2.translate(vec(0., 10.))));
         assert_eq!(None, l1.intersect_segment(&l2.translate(vec(10., 10.))));
     }
+    */
 
+    /*
     #[test]
     fn test_intersect_horizontal() {
         let l1 = LineSegment::new(pt(0., 0.), pt(10., 10.));
         let l2 = LineSegment::new(pt(0., 8.), pt(20., 8.));
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
     }
+    */
 
     #[test]
     fn test_first_line_starts_on_second() {
@@ -232,6 +214,7 @@ mod tests {
         assert_eq!(Some((-1., 0.)), l1.reverse().intersect_lines(&l2));
     }
 
+    /*
     #[test]
     fn test_intersect_regular() {
         let l1 = LineSegment::new(pt(3., 1.), pt(13., 6.));
@@ -252,7 +235,9 @@ mod tests {
 
         assert_eq!(None, l1.intersect_segment(&l2.translate(vec(-20.0, -5.0))));
     }
+    */
 
+    /*
     #[test]
     fn test_intersect_direction() {
         let l1 = LineSegment::new(pt(3., 1.), pt(13., 6.));
@@ -265,7 +250,9 @@ mod tests {
             l1.reverse().intersect_segment(&l2.reverse())
         );
     }
+    */
 
+    /*
     #[test]
     fn test_near_infinite_slope() {
         let l1 = LineSegment::new(
@@ -279,4 +266,5 @@ mod tests {
 
         assert_close!(Some((0.5, false)), l2.intersect_segment(&l1));
     }
+    */
 }

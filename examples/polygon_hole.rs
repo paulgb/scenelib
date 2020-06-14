@@ -5,7 +5,7 @@ use scenelib::prelude::*;
 fn main() {
     let mut scene = Scene::new();
 
-    for i in 0..40 {
+    for i in 5..30 {
         scene.add_segment(LineSegment::new(
             pt(-5., -5. + i as f64),
             pt(20., -10. + i as f64),
