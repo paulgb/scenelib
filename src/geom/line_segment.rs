@@ -2,13 +2,9 @@
 //! basic unit of a `Scene`. This is also where the heart of
 //! the intersection code lives (`LineSegment::intersect_segment`).
 
-use crate::types::{Point, PointActions, PointContainer, Vector, VectorExtension};
+use crate::types::{Point, PointContainer, Vector};
 use rstar::{RTreeObject, AABB};
 
-// A very small number to be used in calculations to avoid some
-// issues that come up with numerical stability. Set experimentally
-// to the lowest order of magnitude where the issues disappear.
-const EPSILON: f64 = 1e-14;
 
 /// Represents a two dimensional line segment, defined in terms of
 /// its endpoints.
@@ -98,95 +94,79 @@ impl LineSegment {
     ///   segment at which they intersect, i.e. a number less than 0 or greater than 1.
     /// - Otherwise, return `None`.
     pub fn intersect_segment(&self, other: &LineSegment) -> Option<(f64, bool)> {
-        let v = self.vector();
+        match self.intersect_lines(other) {
+            Some((f1, f2)) if (0. <= f2 && f2 <= 1.) => {
+                let direction = {
+                    let v = self.c2 - self.c1;
+                    let ov = other.c2 - other.c1;
+                    let perp_dot = (v.x * ov.y) - (v.y * ov.x);
+        
+                    if perp_dot == 0. {
+                        // The lines are parallel.
+                        return None;
+                    } else {
+                        perp_dot > 0.
+                    }
+                };
+                Some((f1, direction))
+            },
+            _ => None
+        }
+        
 
-        // The algorithm assumes that the current line has finite slope (i.e. that
-        // it is neither vertical nor a point), so we handle a few special cases:
-        // - If it's a point, we treat it as if it doesn't intersect anything, so
-        //   we return None.
-        // - If it's a vertical line, we flip the coordinate space by swapping x and
-        //   y and call ourselves recursively. If an intersection is found, we have
-        //   to be careful to flip the direction as well.
-        // For numerical stability, we actually do the flip if the line is not quite
-        // vertical but close enough that floating point errors may cause issues.
-        if v.y == 0. {
-            if v.x == 0. {
-                // This line segment is actually a point.
-                return None;
-            }
-        } else {
-            if (v.x / v.y).abs() < EPSILON {
-                if let Some((frac, direction)) = self.xy_flip().intersect_segment(&other.xy_flip())
-                {
-                    // Direction flips across x/y.
-                    return Some((frac, !direction));
-                } else {
-                    return None;
-                }
-            }
+    }
+
+    /// Returns the location at which two lines (extended to infinity) intersect, relative
+    /// to each line segment.
+    pub fn intersect_lines(&self, other: &LineSegment) -> Option<(f64, f64)> {
+        let ground = other.c1 - self.c1;
+        let ground_len = ground.norm();
+        
+        if ground_len == 0. {
+            // Lines start from the same position.
+            return Some((0., 0.))
+        }
+        
+        let ground_norm = ground / ground.norm();
+        let ground_perp = Vector::new(-ground_norm.y, ground_norm.x);
+        
+        let self_vec = self.c2 - self.c1;
+        let self_vec_norm = self_vec / self_vec.norm();
+        
+        let other_vec = other.c2 - other.c1;
+        let other_vec_norm = other_vec / other_vec.norm();
+        
+        let other_run = other_vec_norm.dot(&ground_norm);
+        let other_rise = other_vec_norm.dot(&ground_perp);
+        if other_rise == 0. {
+            // First line starts on second line.
+            return Some((0., ground_len / other_vec.norm()));
+
+        }
+        
+        let other_slope = other_run / other_rise;
+        
+        let self_run = self_vec_norm.dot(&ground_norm);
+        let self_rise = self_vec_norm.dot(&ground_perp);
+        if self_rise == 0. {
+            // Second line starts on first line.
+            return Some((ground_len / self_vec.norm(), 0.))
         }
 
-        let ov = other.vector();
+        let self_slope = self_run / self_rise;
 
-        // If we extend both lines to infinity, there are three possible cases:
-        // 1. The lines are parallel and never intersect.
-        // 2. The second line crosses the first from the left.
-        // 3. The second line crosses the first from the right.
-        //
-        // Note that these are a function of the directions (vectors) of each line
-        // and the actual positions of the lines in space has no bearing on the
-        // outcome.
-        //
-        // This code determines which case we have, by computing the dot-product
-        // between the first line's vector and the vector obtained by rotating the
-        // second vector a quarter rotation counter-clockwise. If this is positive,
-        // the second line crosses the first line from the right (from the first
-        // line's vantage point); if it is negative, from the left; and if it is
-        // zero, the lines are parallel.
-        let direction = {
-            let perp_dot = (v.x * ov.y) - (v.y * ov.x);
-
-            if perp_dot == 0. {
-                // The lines are parallel.
-                return None;
-            } else {
-                perp_dot > 0.
-            }
-        };
-
-        if ov.y != 0. && ((ov.x / ov.y).abs() < EPSILON) {
-            // If the other line has (near) infinite slope, special case.
-            // We know the lines cross at x = other.c1.x, so we just have to
-            // find that value along x.
-            let frac = (other.c1.x - self.c1.x) / (self.c2.x - self.c1.x);
-            let y = self.c1.y + v.y * frac;
-
-            if (y - other.c1.y) * (y - other.c2.y) > 0. {
-                None
-            } else {
-                Some((frac, direction))
-            }
-        } else {
-            // Otherwise, we find the slope of both and subtract them.
-            let other_slope = ov.slope();
-            let net_slope = v.slope() - other_slope;
-            let y_dist = other.c1.y - self.c1.y + (other_slope * (self.c1.x - other.c1.x));
-            let x_delta = y_dist / net_slope;
-
-            let frac = x_delta / v.x;
-            let x = x_delta + self.c1.x;
-
-            if frac.is_nan() {
-                // The lines may intersect but have the same slope.
-                return None;
-            }
-
-            if (x - other.c1.x) * (x - other.c2.x) > EPSILON {
-                None
-            } else {
-                Some((frac, direction))
-            }
+        let net_slope = self_slope - other_slope;
+        
+        if net_slope == 0. {
+            // Lines are parallel.
+            return None
         }
+
+        let f = ground_len / net_slope;
+        return Some((
+            f / (self_rise * self_vec.norm()),
+            f / (other_rise * other_vec.norm())
+        ))
     }
 }
 
@@ -194,13 +174,29 @@ impl LineSegment {
 mod tests {
     use super::*;
     use crate::types::{pt, vec};
+    use crate::types::{PointActions};
+
+    macro_rules! assert_close {
+        ( $expected:expr, $actual:expr ) => {
+            {
+                match ($expected, $actual) {
+                    (Some((f1, d1)), Some((f2, d2))) => {
+                        assert_eq!(d1, d2);
+                        assert!((f1 - f2).abs() < 1e10);
+                    },
+                    (None, None) => (),
+                    _ => assert_eq!($expected, $actual)
+                }
+            }
+        };
+    }
 
     #[test]
     fn test_intersect_vertical() {
         let l1 = LineSegment::new(pt(0., 5.), pt(10., 5.));
         let l2 = LineSegment::new(pt(5., 0.), pt(5., 10.));
 
-        assert_eq!(Some((0.5, true)), l1.intersect_segment(&l2));
+        assert_close!(Some((0.5, true)), l1.intersect_segment(&l2));
         assert_eq!(
             Some((1.5, true)),
             l1.intersect_segment(&l2.translate(vec(10., 0.)))
@@ -223,7 +219,7 @@ mod tests {
         let l1 = LineSegment::new(pt(3., 1.), pt(13., 6.));
         let l2 = LineSegment::new(pt(10., 6.), pt(14., 2.));
         assert_eq!(Some((0.8, false)), l1.intersect_segment(&l2));
-        assert_eq!(
+        assert_close!(
             Some((0.6, false)),
             l1.intersect_segment(&l2.translate(vec(-2.0, -1.0)))
         );
@@ -253,20 +249,6 @@ mod tests {
     }
 
     #[test]
-    fn test_parallel_lines() {
-        let l1 = LineSegment::new(
-            pt(84.03137539808972, -50.69242864951529),
-            pt(54.73012545327112, 11.113630310194111),
-        );
-        let l2 = LineSegment::new(
-            pt(84.03137539808972, -50.69242864951529),
-            pt(38.15776122775803, 46.07024555196011),
-        );
-        assert_eq!(None, l1.intersect_segment(&l2));
-        assert_eq!(None, l1.intersect_segment(&l2.reverse()));
-    }
-
-    #[test]
     fn test_near_infinite_slope() {
         let l1 = LineSegment::new(
             pt(-0.000000000000000040274189285034336, 10.),
@@ -275,8 +257,8 @@ mod tests {
 
         let l2 = LineSegment::new(pt(-10., 6.), pt(10., 6.));
 
-        assert_eq!(Some((0.4, true)), l1.intersect_segment(&l2));
+        assert_close!(Some((0.4, true)), l1.intersect_segment(&l2));
 
-        assert_eq!(Some((0.5, false)), l2.intersect_segment(&l1));
+        assert_close!(Some((0.5, false)), l2.intersect_segment(&l1));
     }
 }
