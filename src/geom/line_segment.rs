@@ -93,13 +93,13 @@ impl LineSegment {
 
     /// Returns the location at which two lines (extended to infinity) intersect, relative
     /// to each line segment.
-    pub fn intersect_lines(&self, other: &LineSegment) -> Option<(f64, f64)> {
+    pub fn intersect_lines(&self, other: &LineSegment) -> Option<f64> {
         let ground = other.c1 - self.c1;
         let ground_len = ground.norm();
 
         if ground_len == 0. {
             // Lines start from the same position.
-            return Some((0., 0.));
+            return Some(0.);
         }
 
         let ground_norm = ground / ground.norm();
@@ -115,10 +115,7 @@ impl LineSegment {
         let other_rise = other_vec_norm.dot(&ground_perp);
         if other_rise == 0. {
             // First line starts on second line.
-            return Some((
-                0.,
-                -ground_norm.dot(&other_vec_norm) * (ground_len / other_vec.norm()),
-            ));
+            return Some(0.);
         }
 
         let other_slope = other_run / other_rise;
@@ -127,10 +124,7 @@ impl LineSegment {
         let self_rise = self_vec_norm.dot(&ground_perp);
         if self_rise == 0. {
             // Second line starts on first line.
-            return Some((
-                ground_norm.dot(&self_vec_norm) * (ground_len / self_vec.norm()),
-                0.,
-            ));
+            return Some(ground_norm.dot(&self_vec_norm) * (ground_len / self_vec.norm()));
         }
 
         let self_slope = self_run / self_rise;
@@ -143,19 +137,16 @@ impl LineSegment {
         }
 
         let f = ground_len / net_slope;
-        return Some((
-            f / (self_rise * self_vec.norm()),
-            f / (other_rise * other_vec.norm()),
-        ));
+        return Some(f / (self_rise * self_vec.norm()));
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::PointActions;
-    use crate::types::{pt, vec};
+    use crate::types::pt;
 
+    /*
     macro_rules! assert_close {
         ( $expected:expr, $actual:expr ) => {{
             match ($expected, $actual) {
@@ -168,6 +159,7 @@ mod tests {
             }
         }};
     }
+    */
 
     /*
     #[test]
@@ -201,8 +193,8 @@ mod tests {
         let l1 = LineSegment::new(pt(20., 0.), pt(9., 5.));
         let l2 = LineSegment::new(pt(0., 0.), pt(10., 0.));
 
-        assert_eq!(Some((0., 2.)), l1.intersect_lines(&l2));
-        assert_eq!(Some((0., -1.)), l1.intersect_lines(&l2.reverse()));
+        assert_eq!(Some(0.), l1.intersect_lines(&l2));
+        assert_eq!(Some(0.), l1.intersect_lines(&l2.reverse()));
     }
 
     #[test]
@@ -210,8 +202,8 @@ mod tests {
         let l1 = LineSegment::new(pt(0., 0.), pt(10., 0.));
         let l2 = LineSegment::new(pt(20., 0.), pt(9., 5.));
 
-        assert_eq!(Some((2., 0.)), l1.intersect_lines(&l2));
-        assert_eq!(Some((-1., 0.)), l1.reverse().intersect_lines(&l2));
+        assert_eq!(Some(2.), l1.intersect_lines(&l2));
+        assert_eq!(Some(-1.), l1.reverse().intersect_lines(&l2));
     }
 
     /*

@@ -90,7 +90,7 @@ impl Scene {
                 for point_side in &point_sides {
                     if point_side.1 != last.1 {
                         // This line segment crosses.
-                        let (f, _) = line
+                        let f = line
                             .intersect_lines(&LineSegment::new(*last.0, *point_side.0))
                             .unwrap();
 
