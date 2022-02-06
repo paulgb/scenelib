@@ -1,4 +1,4 @@
-**This is incomplete (and probably abandoned) code!***
+**This is incomplete (and probably abandoned) code!**
 
 Concepts:
 
