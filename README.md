@@ -1,3 +1,5 @@
+**This is incomplete (and probably abandoned) code!***
+
 Concepts:
 
 - `Scene3` is a 3D scene (unordered collection of vectors).
